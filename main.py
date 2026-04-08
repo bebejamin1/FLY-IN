@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/07 11:00:13 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/07 17:12:42 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/08 11:34:15 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -16,6 +16,8 @@ import sys
 import random
 
 from pathlib import Path
+
+from parsing.map_parser import MapParser
 
 
 green = "\033[32m\033[1m\033[1m"
@@ -50,58 +52,16 @@ class MapSelector:
 
     def display_level(self) -> None:
         print(blue)
-        print("                   __-----_.           "
-              "             ______".center(60, " "))
-        print("          /  \\      \\           o  O "
-              " O   _(      )__".center(60, " "))
-        print("         /    |  |   \\_---_   o._.    "
-              "  _(           )_".center(60, " "))
-        print("        |     |            \\   | |\"\""
-              "\"\"(_   Let's see... )".center(60, " "))
-        print("        |     |             |@ | |    ("
-              "_               _)".center(60, " "))
-        print("         \\___/   ___       /   | |    "
-              "  (__          _)".center(60, " "))
-        print("           \\____(____\\___/     | |   "
-              "      (________)".center(60, " "))
-        print("           |__|                | |     "
-              "     |".center(60, " "))
-        print("           /   \\-_             | |    "
-              "     |'".center(60, " "))
-        print("         /      \\_ \"__ _       !_!--v"
-              "---v--\"".center(60, " "))
-        print("        /         \"|  |>)      |\"\"\""
-              "\"\"\"\"\"|".center(60, " "))
-        print("       |          _|  | ._--""||       "
-              " |".center(60, " "))
-        print("       _\\_____________|_|_____||______"
-              "__|_".center(60, " "))
-        print("      /                                "
-              "   \\".center(60, " "))
-        print("     /_________________________________"
-              "____\\".center(60, " "))
-        print("     /                                 "
-              "    \\".center(60, " "))
-        print("    /__________________________________"
-              "_____\\".center(60, " "))
-        print("    /                                  "
-              "     \\".center(60, " "))
-        print("   /___________________________________"
-              "______\\".center(60, " "))
-        print("        {                              "
-              " }".center(60, " "))
-        print("        <______________________________"
-              "_|".center(60, " "))
-        print("        |                              "
-              " >".center(60, " "))
-        print("        {______________________________"
-              "_|               ________".center(60, " "))
-        print("        <                              "
-              " }              / SNOOPY \\".center(60, " "))
-        print("        |______________________________"
-              "_|             /__________\\".center(60, " "))
-        print("\\|/       \\\\/             \\||//    "
-              "       |//                       \\|/    |/".center(60, " "))
+        print("     ----.".center(60, " "))
+        print("    \"   _}".center(60, " "))
+        print("    \"@   >".center(60, " "))
+        print("    |\\   7".center(60, " "))
+        print("    / `-- _         ,-------,****".center(60, " "))
+        print(" ~    >o<  \\---------o{___}-".center(60, " "))
+        print("/  |  \\  /  ________/8'".center(60, " "))
+        print("|  |       /         \"".center(60, " "))
+        print("|  /      |".center(60, " "))
+        print("")
         print(reset)
 
 # *****************************************************************************
@@ -112,7 +72,16 @@ class MapSelector:
 
         return (list(self.directory.rglob("")))
 
-    def prompt_user_file(self) -> Path | None:
+    def get_available_level(self, map_file: str) -> list[Path]:
+
+        folder = Path(map_file)
+
+        if not folder.exists() or not folder.is_dir():
+            return []
+
+        return sorted(folder.glob("*.txt"))
+
+    def prompt_user(self) -> Path | None:
         files: list[Path] = self.get_available_file()
 
         if (not files):
@@ -121,11 +90,11 @@ class MapSelector:
             return (None)
         del files[0]
 
-        while (True):
+        try:
 
-            try:
+            while (True):
 
-                # os.system('clear')
+                os.system('clear')
 
                 self.display_file()
 
@@ -137,50 +106,30 @@ class MapSelector:
 
                 choice_file: str = input("\nSelect a file "
                                          f"(1-{len(files) + 1}) : ")
-                print(int(choice_file) == {len(files) + 1})
+
                 if (choice_file.isdigit()):
 
-                    if (int(choice_file) == {len(files) + 1}):
+                    if (int(choice_file) == len(files) + 1):
                         sys.exit()
 
                 index: int = int(choice_file) - 1
 
                 if (0 <= index < len(files)):
-                    file: Path = files[index]
-                    return (file)
+                    map_files: Path = files[index]
+                    break
 
                 print(f"{red}[ERROR]{reset} Invalid. Try again.")
 
-            except (UnboundLocalError, AttributeError):
-                print("gepoghnep")
-        return (None)
+            levels: list[Path] = self.get_available_level(map_files)
 
-# *****************************************************************************
-# *                                level                                      *
-# *                                                                           *
+            if not levels:
+                print(f"{red}[ERROR]{reset} No map (.txt) found "
+                      f"in the folder '{self.directory.name}'.")
+                return (None)
 
-    def get_available_level(self, map_file: str) -> list[Path]:
+            while (True):
 
-        folder = Path(map_file)
-
-        if not folder.exists() or not folder.is_dir():
-            return []
-
-        return sorted(folder.glob("*.txt"))
-
-    def prompt_user_level(self, map_file: str) -> Path | None:
-
-        levels: list[Path] = self.get_available_level(map_file)
-
-        if not levels:
-            print(f"{red}[ERROR]{reset} No map (.txt) found in the folder "
-                  f"'{self.directory.name}'.")
-            return (None)
-
-        while (True):
-            try:
-
-                # os.system('clear')
+                os.system('clear')
 
                 self.display_level()
 
@@ -194,10 +143,8 @@ class MapSelector:
                                           f"(1-{len(levels) + 1}) : ")
 
                 if choise_level.isdigit():
-                    print(choise_level)
-                    print(len(levels))
-                    if (choise_level == (len(levels) + 1)):
-                        self.prompt_user_file()
+                    if (int(choise_level) == (len(levels) + 1)):
+                        self.prompt_user()
 
                     index: int = int(choise_level) - 1
 
@@ -207,8 +154,14 @@ class MapSelector:
 
                 print(f"{red}[ERROR]{reset} Invalid. Try again.")
 
-            except (UnboundLocalError):
-                print("gekogp")
+        except (UnboundLocalError, AttributeError, KeyboardInterrupt):
+            print("gepoghnep")
+
+        return (None)
+
+# *****************************************************************************
+# *                                main                                       *
+# *                                                                           *
 
 
 def main() -> None:
@@ -217,18 +170,17 @@ def main() -> None:
 
         selector = MapSelector()
 
-        map_file: Path | None = selector.prompt_user_file()
+        map_level: Path | None = selector.prompt_user()
 
-        if (map_file is None):
+        if (map_level is None):
             raise AttributeError("Program stopped")
 
-        print(map_file)
-        map_level: Path | None = selector.prompt_user_level(map_file)
-
-    except (KeyboardInterrupt, UnboundLocalError):
+    except (KeyboardInterrupt, UnboundLocalError, AttributeError):
         print("Program canceled")
 
-    print(map_level)
+    level_load: MapParser | None = MapParser.parse_maps()
+
+    print(level_load)
 
 
 if __name__ == "__main__":
