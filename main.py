@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/07 11:00:13 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/08 11:34:15 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/13 13:12:27 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -17,7 +17,7 @@ import random
 
 from pathlib import Path
 
-from parsing.map_parser import MapParser
+# from parsing.map_parser import MapParser
 
 
 green = "\033[32m\033[1m\033[1m"
@@ -178,9 +178,9 @@ def main() -> None:
     except (KeyboardInterrupt, UnboundLocalError, AttributeError):
         print("Program canceled")
 
-    level_load: MapParser | None = MapParser.parse_maps()
+    # level_load: MapParser | None = MapParser.parse_maps(map_level)
 
-    print(level_load)
+    # print(map_level)
 
 
 if __name__ == "__main__":
