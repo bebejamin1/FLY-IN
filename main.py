@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/07 11:00:13 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/17 17:53:47 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/17 17:58:08 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -186,6 +186,7 @@ def main() -> None:
         #         print(connect.way_1, connect.way_2, "\n")
 
         # parsing fini commence a soit cree laffichage soit cree lalgo
+        # revoir la maniere de stockage des connections
 
     except (KeyboardInterrupt, UnboundLocalError, AttributeError):
         print("Program canceled")
