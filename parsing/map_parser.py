@@ -7,12 +7,12 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/08 12:12:22 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/17 14:09:50 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/17 15:52:52 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
 
-from parser import Level
+from .parser import Level
 
 
 green = "\033[32m\033[1m\033[1m"
@@ -26,14 +26,18 @@ reset = "\033[0m"
 class MapParser():
 
     def __init__(self, level: str) -> None:
-        self.level = f"../{level}"
+        self.level = f"{level}"
         self.drones = False
 
-    def parse_maps(self) -> None:
+    def parse_maps(self) -> Level:
 
         try:
 
             with open(self.level) as f:
+
+                if (len(f.read()) <= 10):
+                    raise ValueError("The file is empty, you idiot")
+
                 parse = Level()
 
                 for line in f:
@@ -42,6 +46,7 @@ class MapParser():
 
                     if (line.startswith("nb_drones:")):
                         parse.set_drone(line[11:])
+                        print(parse.nbr_drones)
                         self.drones = True
 
                     if (line.startswith(("start_hub:", "hub:", "end_hub:",
@@ -78,11 +83,32 @@ class MapParser():
                     else:
                         pass
 
+                if ():
+                    pass
+                print(parse.nbr_drones)
+                print(parse.start_hub)
+                print(parse.end_hub)
+                print(parse.hub)
+                if (parse.start_hub is None):
+                    raise ValueError("There must be an start hub")
+
+                if (len(parse.start_hub.connection) == 0):
+                    raise ValueError("The start_hub has no connections")
+
+                if (parse.end_hub is None):
+                    raise ValueError("There must be an end hub")
+
+                if (len(parse.end_hub.connection) == 0):
+                    raise ValueError("The end_hub has no connections")
+
+                return (parse)
+
         except (FileNotFoundError, ValueError, AttributeError) as f:
             print(f"{red}[ERROR]{reset} : {f}")
 
 
 if __name__ == "__main__":
-    level = "maps/challenger/01_the_impossible_dream.txt"
+    level = "maps/error/blocked.txt"
     map = MapParser(level)
-    map.parse_maps()
+    level_data = map.parse_maps()
+    print(level_data)

@@ -7,13 +7,13 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/13 13:30:59 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/17 14:15:00 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/17 15:40:58 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
 
-from hub import Hub
-from connection import Connection
+from .hub import Hub
+from .connection import Connection
 # from pydantic import BaseModel, Field
 
 green = "\033[32m\033[1m\033[1m"
@@ -89,7 +89,8 @@ class Level():
 
                 elif not (m[m.find("=") + 1:]
                           in valid_value[valid_meta.index(m[:m.find("=")])]):
-                    raise ValueError(f"The value is not managed {m}")
+                    raise ValueError(f"The value is not good {m}"
+                                     " must be [key=value key=value]")
 
                 else:
                     meta_dict[m[:m.find("=")]] = m[m.find("=") + 1:]

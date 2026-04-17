@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/07 11:00:13 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/13 13:12:27 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/17 14:54:49 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -17,7 +17,7 @@ import random
 
 from pathlib import Path
 
-# from parsing.map_parser import MapParser
+from parsing.map_parser import MapParser
 
 
 green = "\033[32m\033[1m\033[1m"
@@ -171,6 +171,7 @@ def main() -> None:
         selector = MapSelector()
 
         map_level: Path | None = selector.prompt_user()
+        print(map_level)
 
         if (map_level is None):
             raise AttributeError("Program stopped")
@@ -178,9 +179,9 @@ def main() -> None:
     except (KeyboardInterrupt, UnboundLocalError, AttributeError):
         print("Program canceled")
 
-    # level_load: MapParser | None = MapParser.parse_maps(map_level)
+    level_load: MapParser | None = MapParser(map_level).parse_maps()
 
-    # print(map_level)
+    # print(level_load.hub.keys())
 
 
 if __name__ == "__main__":
