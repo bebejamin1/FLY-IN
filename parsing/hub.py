@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/13 15:06:57 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/17 13:39:19 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/17 17:37:07 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -24,9 +24,6 @@ class Hub():
         self.max_drones = 1
         self.connection: list[object] = []
         self.value: int = 0
-
-    def start_hub(self):
-        pass
 
     def hub(self):
         pass

@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/13 13:30:59 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/17 15:40:58 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/17 17:36:23 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -111,6 +111,10 @@ class Level():
 
             name = str(line[0])
             coord = (int(line[1]), int(line[2]))
+
+            if not (self.hub.get(name) is None and self.start_hub is None):
+                raise ValueError("start_hub duplicate")
+
             huber = Hub(name, coord)
 
             meta = self.clean_meta(meta)
@@ -136,6 +140,10 @@ class Level():
 
             name = str(line[0])
             coord = (int(line[1]), int(line[2]))
+
+            if not (self.hub.get(name) is None and self.end_hub is None):
+                raise ValueError("start_hub duplicate")
+
             huber = Hub(name, coord)
 
             meta = self.clean_meta(meta)
@@ -161,6 +169,10 @@ class Level():
 
             name = str(line[0])
             coord = (int(line[1]), int(line[2]))
+
+            if not (self.hub.get(name) is None):
+                raise ValueError("Hub duplicate")
+
             huber = Hub(name, coord)
 
             meta = self.clean_meta(meta)
@@ -233,6 +245,8 @@ class Level():
 
 if __name__ == "__main__":
     test = Level()
-    line = ["start", "0", "0"]
+    # test.start_hub = "gegsgs"
+    test.hub["ok"] = "gkro"
+    line = ["ok", "0", "0"]
     meta = ""
-    start = test.make_connection(line)
+    start = test.create_start_hub(line, meta)

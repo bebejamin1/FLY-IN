@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/08 12:12:22 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/17 15:52:52 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/17 16:53:52 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -33,26 +33,26 @@ class MapParser():
 
         try:
 
-            with open(self.level) as f:
+            with open(self.level, "r") as f:
 
                 if (len(f.read()) <= 10):
                     raise ValueError("The file is empty, you idiot")
 
                 parse = Level()
 
+                f.seek(0)
                 for line in f:
 
                     meta = None
 
                     if (line.startswith("nb_drones:")):
                         parse.set_drone(line[11:])
-                        print(parse.nbr_drones)
                         self.drones = True
 
                     if (line.startswith(("start_hub:", "hub:", "end_hub:",
                                         "connection:"))
                             and self.drones is False):
-                        print(f"{red}[ERROR]{reset} : "
+                        raise ValueError(f"{red}[ERROR]{reset} : "
                               "The number of drones is not specified first")
                         exit()
 
@@ -83,20 +83,20 @@ class MapParser():
                     else:
                         pass
 
-                if ():
-                    pass
-                print(parse.nbr_drones)
-                print(parse.start_hub)
-                print(parse.end_hub)
-                print(parse.hub)
                 if (parse.start_hub is None):
                     raise ValueError("There must be an start hub")
+
+                if (parse.start_hub.zone == "blocked"):
+                    raise ValueError("The start cannot be blocked")
 
                 if (len(parse.start_hub.connection) == 0):
                     raise ValueError("The start_hub has no connections")
 
                 if (parse.end_hub is None):
                     raise ValueError("There must be an end hub")
+
+                if (parse.end_hub.zone == "blocked"):
+                    raise ValueError("The end cannot be blocked")
 
                 if (len(parse.end_hub.connection) == 0):
                     raise ValueError("The end_hub has no connections")

@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/07 11:00:13 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/17 14:54:49 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/17 17:53:14 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -176,12 +176,17 @@ def main() -> None:
         if (map_level is None):
             raise AttributeError("Program stopped")
 
+        level_load: MapParser | None = MapParser(map_level).parse_maps()
+
+        # for k, v in level_load.hub.items():
+        #     print(k)
+        #     for connect in v.connection:
+        #         print(connect.way_1, connect.way_2, "\n")
+
+        # parsing fini commence a soit cree laffichage soit cree lalgo
+
     except (KeyboardInterrupt, UnboundLocalError, AttributeError):
         print("Program canceled")
-
-    level_load: MapParser | None = MapParser(map_level).parse_maps()
-
-    # print(level_load.hub.keys())
 
 
 if __name__ == "__main__":
