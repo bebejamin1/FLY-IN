@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/08 12:12:22 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/15 17:34:28 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/17 14:09:50 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -27,6 +27,7 @@ class MapParser():
 
     def __init__(self, level: str) -> None:
         self.level = f"../{level}"
+        self.drones = False
 
     def parse_maps(self) -> None:
 
@@ -37,31 +38,48 @@ class MapParser():
 
                 for line in f:
 
-                    line = "connection: gate_hell1-gate_hell2"
+                    meta = None
 
                     if (line.startswith("nb_drones:")):
-                        parse.set_drone(line)
+                        parse.set_drone(line[11:])
+                        self.drones = True
+
+                    if (line.startswith(("start_hub:", "hub:", "end_hub:",
+                                        "connection:"))
+                            and self.drones is False):
+                        print(f"{red}[ERROR]{reset} : "
+                              "The number of drones is not specified first")
+                        exit()
 
                     if (line.startswith("start_hub")):
-                        print(line[11:].split(" "))
-                        parse.create_start_hub(line[11:].split(" "))
+                        meta = line[line.find("["):]
+                        if (meta != 0):
+                            line = line[:line.find("[") - 1]
+                        parse.create_start_hub(line[11:].strip().split(" "),
+                                               meta[:-1])
 
                     if (line.startswith("hub:")):
-                        test = line[5:].split(" ")
-                        print(test)
-                        parse.create_hub(line[5:].split(" "))
+                        meta = line[line.find("["):]
+                        if (meta != 0):
+                            line = line[:line.find("[") - 1]
+                        parse.create_hub(line[5:].strip().split(" "),
+                                         meta[:-1])
 
                     if (line.startswith("end_hub")):
-                        parse.create_end_hub(line[9:].split(" "))
+                        meta = line[line.find("["):]
+                        if (meta != 0):
+                            line = line[:line.find("[") - 1]
+                        parse.create_end_hub(line[9:].strip().split(" "),
+                                             meta[:-1])
 
                     if (line.startswith("connection:")):
-                        parse.make_connection(line[12:].split(" "))
+                        parse.make_connection(line[12:].strip().split(" "))
 
                     else:
                         pass
 
-        except (FileNotFoundError) as f:
-            print(f"[ERROR] : {f}")
+        except (FileNotFoundError, ValueError, AttributeError) as f:
+            print(f"{red}[ERROR]{reset} : {f}")
 
 
 if __name__ == "__main__":
