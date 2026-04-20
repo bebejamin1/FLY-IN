@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/07 11:00:13 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/17 17:58:08 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/20 14:46:54 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -155,7 +155,7 @@ class MapSelector:
                 print(f"{red}[ERROR]{reset} Invalid. Try again.")
 
         except (UnboundLocalError, AttributeError, KeyboardInterrupt):
-            print("gepoghnep")
+            print("T con ?")
 
         return (None)
 
@@ -171,22 +171,18 @@ def main() -> None:
         selector = MapSelector()
 
         map_level: Path | None = selector.prompt_user()
-        print(map_level)
 
         if (map_level is None):
             raise AttributeError("Program stopped")
 
         level_load: MapParser | None = MapParser(map_level).parse_maps()
 
-        print(level_load)
+        # algorithm [[[]]]
 
-        # for k, v in level_load.hub.items():
-        #     print(k)
-        #     for connect in v.connection:
-        #         print(connect.way_1, connect.way_2, "\n")
+        # display [[[]]]
 
         # parsing fini commence a soit cree laffichage soit cree lalgo
-        # revoir la maniere de stockage des connections
+        # revoir la maniere de stockage les connections
 
     except (KeyboardInterrupt, UnboundLocalError, AttributeError):
         print("Program canceled")

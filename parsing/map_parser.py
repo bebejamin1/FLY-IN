@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/08 12:12:22 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/17 16:53:52 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/20 10:16:24 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -103,8 +103,13 @@ class MapParser():
 
                 return (parse)
 
-        except (FileNotFoundError, ValueError, AttributeError) as f:
-            print(f"{red}[ERROR]{reset} : {f}")
+        except (ValueError, AttributeError) as e:
+            print(f"{red}[ERROR]{reset} : {e}")
+
+        except FileNotFoundError:
+            print(f"{red}[ERROR]{reset} : File missing; """
+                  "there must be a parent file named “maps” "
+                  "that contains text files")
 
 
 if __name__ == "__main__":
