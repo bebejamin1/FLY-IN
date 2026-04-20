@@ -7,13 +7,12 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/13 13:30:59 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/20 10:15:51 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/20 15:13:58 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
 
-from .hub import Hub
-from .connection import Connection
+from .plateform import Hub, Connection
 
 green = "\033[32m\033[1m\033[1m"
 red = "\033[31m\033[5m\033[1m"

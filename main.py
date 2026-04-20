@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/07 11:00:13 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/20 14:46:54 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/20 15:24:55 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -175,7 +175,7 @@ def main() -> None:
         if (map_level is None):
             raise AttributeError("Program stopped")
 
-        level_load: MapParser | None = MapParser(map_level).parse_maps()
+        level_load: MapParser | None = MapParser(map_level).parse_maps()  # noqa
 
         # algorithm [[[]]]
 
