@@ -7,11 +7,11 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/23 13:30:00 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/23 13:22:39 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/23 13:37:19 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
-from typing import Tuple, Optional
+from typing import Tuple
 
 
 class Drone:

@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/20 10:45:00 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/23 13:31:47 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/23 13:42:18 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -215,7 +215,6 @@ class GameView(arcade.Window):
 
     def _clamp_pan(self) -> None:
         """Limit pan to keep map visible"""
-        # Calculate visible world area at current zoom
         visible_width = WINDOWS_WIDTH / self.zoom
         visible_height = WINDOWS_HEIGHT / self.zoom
 
@@ -250,25 +249,28 @@ class GameView(arcade.Window):
             x2 = screen_x + end[0] * self.zoom
             y2 = screen_y + end[1] * self.zoom
             arcade.draw_line(
-                int(x1), int(y1), int(x2), int(y2), arcade.color.WHITE, 2
-            )
+                int(x1), int(y1), int(x2), int(y2), arcade.color.BROWN, 4
+                            )
             mid_x = (x1 + x2) / 2
             mid_y = (y1 + y2) / 2
+
             arcade.draw_text(
                 str(capacity), int(mid_x), int(mid_y),
-                arcade.color.YELLOW, max(6, int(8 * self.zoom)),
+                arcade.color.RED, max(6, int(10 * self.zoom)),
                 anchor_x="center"
-            )
+                            )
 
         # Draw hubs with transformation and zoom-adjusted scale
         for i, hub_sprite in enumerate(self.hub_sprites):
             hub = list(self.level.hub.values())[i]
+
             hub_sprite.center_x = (
                 screen_x + (hub.coord[0] * GRID_SIZE + OFFSET_X) * self.zoom
-            )
+                                  )
             hub_sprite.center_y = (
                 screen_y + (hub.coord[1] * GRID_SIZE + OFFSET_Y) * self.zoom
-            )
+                                  )
+
             # Adjust sprite scale based on zoom level
             hub_sprite.scale = 0.06 * self.zoom
 
@@ -286,25 +288,28 @@ class GameView(arcade.Window):
             # Draw name above the hub
             arcade.draw_text(
                 hub.name, int(x), int(y + 35), arcade.color.WHITE,
-                max(6, int(8 * self.zoom)), anchor_x="center"
+                max(6, int(8 * self.zoom)), anchor_x="center", anchor_y="top"
             )
 
             # Draw max_drones below the hub
             arcade.draw_text(
-                f"M:{hub.max_drones}", int(x), int(y - 30),
-                arcade.color.RED, max(6, int(7 * self.zoom)), anchor_x="center"
-            )
+                f"Max drones:{hub.max_drones}", int(x), int(y - 30),
+                arcade.color.RED, max(6, int(7 * self.zoom)),
+                anchor_x="center", anchor_y="bottom"
+                            )
 
             # Draw cost below max_drones
             arcade.draw_text(
-                f"C:{hub.value}", int(x), int(y - 40),
-                arcade.color.RED, max(6, int(7 * self.zoom)), anchor_x="center"
-            )
+                f"Cost:{hub.value}", int(x), int(y - 40),
+                arcade.color.RED, max(6, int(7 * self.zoom)),
+                anchor_x="center", anchor_y="bottom"
+                            )
 
         # Draw drones with transformation and zoom-adjusted scale
         for drone_id, drone_sprite in self.drone_sprites.items():
             if self.round_manager:
-                current_hub_name = self.round_manager.get_drone_current_hub(drone_id)
+                current_hub_name = self.round_manager\
+                                       .get_drone_current_hub(drone_id)
                 if current_hub_name in self.level.hub:
                     hub = self.level.hub[current_hub_name]
                     drone_sprite.center_x = screen_x + (
@@ -319,16 +324,18 @@ class GameView(arcade.Window):
 
         # Draw round info in top-right corner
         arcade.draw_text(
-            f"Round: {self.current_round}", 
+            f"Round: {self.current_round}",
             WINDOWS_WIDTH - 150, WINDOWS_HEIGHT - 25,
             arcade.color.WHITE, 14
         )
-        
+
         # Draw pause status
         pause_text = "PAUSED" if self.is_paused else "RUNNING"
-        pause_color = arcade.color.RED if self.is_paused else arcade.color.GREEN
+        pause_color = arcade.color.RED if self.is_paused\
+            else arcade.color.GREEN
+
         arcade.draw_text(
-            pause_text, 
+            pause_text,
             WINDOWS_WIDTH - 150, WINDOWS_HEIGHT - 50,
             pause_color, 12
         )
@@ -386,25 +393,25 @@ class GameView(arcade.Window):
         # SPACE: Exécuter un round
         if key == arcade.key.SPACE:
             self.next_round()
-        
+
         # P: Pause/Resume
         elif key == arcade.key.P:
             if self.is_paused:
                 self.resume()
             else:
                 self.pause()
-        
+
         # R: Reset
         elif key == arcade.key.R:
             if self.round_manager:
                 self.round_manager.reset()
                 self.current_round = 0
                 self.frame_counter = 0
-        
+
         # +: Accélérer
         elif key == arcade.key.PLUS or key == arcade.key.EQUAL:
             self.round_speed = max(1, self.round_speed - 1)
-        
+
         # -: Ralentir
         elif key == arcade.key.MINUS:
             self.round_speed += 1
