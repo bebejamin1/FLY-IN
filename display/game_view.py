@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/20 10:45:00 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/23 13:42:18 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/23 17:16:28 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -41,6 +41,7 @@ class GameView(arcade.Window):
         self.background = None
         self.hub_sprites = arcade.SpriteList()
         self.drone_sprites = {}
+        self.drone_list = arcade.SpriteList()
         self.connection_lines = []
         self.round_manager = None
         self.drone_texture = None
@@ -105,7 +106,7 @@ class GameView(arcade.Window):
         for hub in self.level.hub.values():
             texture = self.hub_textures.get(
                 hub.zone, self.hub_textures["normal"]
-            )
+                                           )
             sprite = arcade.Sprite(texture)
             # Set uniform scale for all hubs
             sprite.scale = 0.05
@@ -154,59 +155,54 @@ class GameView(arcade.Window):
                     self.level.start_hub.coord[1] * GRID_SIZE + OFFSET_Y
                 )
             self.drone_sprites[i] = sprite
+            self.drone_list.append(sprite)
 
         # Auto-center the map
-    #     self._center_map()
+        self._center_map()
 
-    # def _center_map(self) -> None:
-    #     """Center the map structure at the center of the screen"""
-    #     if not self.level.hub:
-    #         return
+    def _center_map(self) -> None:
+        if not self.level.hub:
+            return
 
-    #     # Calculate bounds
-    #     coords = [hub.coord for hub in self.level.hub.values()]
-    #     min_x = min(c[0] for c in coords)
-    #     max_x = max(c[0] for c in coords)
-    #     min_y = min(c[1] for c in coords)
-    #     max_y = max(c[1] for c in coords)
+        # Calculate bounds
+        coords = [hub.coord for hub in self.level.hub.values()]
+        min_x = min(c[0] for c in coords)
+        max_x = max(c[0] for c in coords)
+        min_y = min(c[1] for c in coords)
+        max_y = max(c[1] for c in coords)
 
-    #     # Store map boundaries for pan limiting (in world coordinates)
-    #     self.map_min_x = (min_x - 2) * GRID_SIZE + OFFSET_X
-    #     self.map_max_x = (max_x + 2) * GRID_SIZE + OFFSET_X
-    #     self.map_min_y = (min_y - 2) * GRID_SIZE + OFFSET_Y
-    #     self.map_max_y = (max_y + 2) * GRID_SIZE + OFFSET_Y
+        # Store map boundaries for pan limiting (in world coordinates)
+        self.map_min_x = (min_x - 2) * GRID_SIZE + OFFSET_X
+        self.map_max_x = (max_x + 2) * GRID_SIZE + OFFSET_X
+        self.map_min_y = (min_y - 2) * GRID_SIZE + OFFSET_Y
+        self.map_max_y = (max_y + 2) * GRID_SIZE + OFFSET_Y
 
-    #     # Calculate center of the hub structure
-    #     center_x = ((min_x + max_x) / 2) * GRID_SIZE + OFFSET_X
-    #     center_y = ((min_y + max_y) / 2) * GRID_SIZE + OFFSET_Y
+        # Calculate center of the hub structure
+        center_x = ((min_x + max_x) / 2) * GRID_SIZE + OFFSET_X
+        center_y = ((min_y + max_y) / 2) * GRID_SIZE + OFFSET_Y
 
-    #     # Set initial zoom to a reasonable level
-    #     self.zoom = 1.0
+        # Set initial zoom to a reasonable level
+        self.zoom = 1.0
 
-    #     # Center the structure at the screen center
-    #     self.pan_x = center_x
-    #     self.pan_y = center_y
+        # Center the structure at the screen center
+        self.pan_x = center_x
+        self.pan_y = center_y
 
     def execute_round(self) -> None:
-        """Exécute un round: déplace tous les drones"""
         if not self.is_paused and self.round_manager:
             self.round_manager.execute_round()
             self.current_round = self.round_manager.current_round
 
     def next_round(self) -> None:
-        """Force l'exécution du prochain round"""
         self.execute_round()
 
     def pause(self) -> None:
-        """Mets en pause la simulation"""
         self.is_paused = True
 
     def resume(self) -> None:
-        """Reprend la simulation"""
         self.is_paused = False
 
     def on_update(self, delta_time: float) -> None:
-        """Mise à jour à chaque frame"""
         if not self.is_paused:
             self.frame_counter += 1
             if self.frame_counter >= self.round_speed:
@@ -214,7 +210,6 @@ class GameView(arcade.Window):
                 self.frame_counter = 0
 
     def _clamp_pan(self) -> None:
-        """Limit pan to keep map visible"""
         visible_width = WINDOWS_WIDTH / self.zoom
         visible_height = WINDOWS_HEIGHT / self.zoom
 
@@ -285,25 +280,38 @@ class GameView(arcade.Window):
             x = screen_x + world_x * self.zoom
             y = screen_y + world_y * self.zoom
 
-            # Draw name above the hub
+            # 1. Draw name ABOVE the hub
             arcade.draw_text(
-                hub.name, int(x), int(y + 35), arcade.color.WHITE,
-                max(6, int(8 * self.zoom)), anchor_x="center", anchor_y="top"
+                hub.name,
+                int(x),
+                int(y + (40 * self.zoom)),
+                arcade.color.WHITE,
+                max(6, int(10 * self.zoom)),
+                anchor_x="center",
+                anchor_y="bottom"
             )
 
-            # Draw max_drones below the hub
+            # 2. Draw max_drones BELOW the hub
             arcade.draw_text(
-                f"Max drones:{hub.max_drones}", int(x), int(y - 30),
-                arcade.color.RED, max(6, int(7 * self.zoom)),
-                anchor_x="center", anchor_y="bottom"
-                            )
+                f"Max drones:{hub.max_drones}",
+                int(x),
+                int(y - (35 * self.zoom)),
+                arcade.color.RED,
+                max(6, int(8 * self.zoom)),
+                anchor_x="center",
+                anchor_y="top"
+            )
 
-            # Draw cost below max_drones
+            # 3. Draw cost BELOW max_drones
             arcade.draw_text(
-                f"Cost:{hub.value}", int(x), int(y - 40),
-                arcade.color.RED, max(6, int(7 * self.zoom)),
-                anchor_x="center", anchor_y="bottom"
-                            )
+                f"Cost:{hub.value}",
+                int(x),
+                int(y - (50 * self.zoom)),
+                arcade.color.RED,
+                max(6, int(8 * self.zoom)),
+                anchor_x="center",
+                anchor_y="top"
+            )
 
         # Draw drones with transformation and zoom-adjusted scale
         for drone_id, drone_sprite in self.drone_sprites.items():
@@ -320,8 +328,8 @@ class GameView(arcade.Window):
                     ) * self.zoom
                     # Adjust drone scale based on zoom level
                     drone_sprite.scale = 0.03 * self.zoom
-                    drone_sprite.draw()
 
+        self.drone_list.draw()
         # Draw round info in top-right corner
         arcade.draw_text(
             f"Round: {self.current_round}",
@@ -390,7 +398,7 @@ class GameView(arcade.Window):
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         """Contrôles du clavier"""
-        # SPACE: Exécuter un round
+        # SPACE: Execute round
         if key == arcade.key.SPACE:
             self.next_round()
 
@@ -408,11 +416,11 @@ class GameView(arcade.Window):
                 self.current_round = 0
                 self.frame_counter = 0
 
-        # +: Accélérer
+        # +: speed
         elif key == arcade.key.PLUS or key == arcade.key.EQUAL:
             self.round_speed = max(1, self.round_speed - 1)
 
-        # -: Ralentir
+        # -: slow
         elif key == arcade.key.MINUS:
             self.round_speed += 1
 

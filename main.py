@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/07 11:00:13 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/23 14:00:39 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/23 17:27:26 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -186,11 +186,16 @@ def main() -> None:
 
         display_main(level_load)
 
-        # parsing fini commence a soit cree laffichage soit cree lalgo
+        # next step
         # revoir la maniere de stockage les connections
 
-    except (KeyboardInterrupt, UnboundLocalError, AttributeError):
+    except KeyboardInterrupt:
         print("Program canceled")
+
+    except Exception as e:
+        print("\n" + f"{red}[CRASH]{reset}")
+        print(e)
+        raise
 
 
 if __name__ == "__main__":
