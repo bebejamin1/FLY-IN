@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/08 12:12:22 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/20 10:16:24 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/23 13:02:21 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -101,15 +101,26 @@ class MapParser():
                 if (len(parse.end_hub.connection) == 0):
                     raise ValueError("The end_hub has no connections")
 
+                if (parse.start_hub.coord == parse.end_hub.coord):
+                    raise ValueError("The start_hub and end_hub cannot be part"
+                                     " of the same problem")
+
+                if (parse.start_hub.max_drones < parse.nbr_drones
+                        or parse.end_hub.max_drones < parse.nbr_drones):
+                    raise ValueError("There are too many drones to place on "
+                                     "the start and/or end hubs")
+
                 return (parse)
 
         except (ValueError, AttributeError) as e:
             print(f"{red}[ERROR]{reset} : {e}")
+            exit()
 
         except FileNotFoundError:
             print(f"{red}[ERROR]{reset} : File missing; """
                   "there must be a parent file named “maps” "
                   "that contains text files")
+            exit()
 
 
 if __name__ == "__main__":

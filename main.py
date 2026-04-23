@@ -18,6 +18,7 @@ import random
 from pathlib import Path
 
 from parsing.map_parser import MapParser
+from display.game_view import main as display_main
 
 
 green = "\033[32m\033[1m\033[1m"
@@ -179,7 +180,7 @@ def main() -> None:
 
         # algorithm [[[]]]
 
-        # display [[[]]]
+        display_main(level_load)
 
         # parsing fini commence a soit cree laffichage soit cree lalgo
         # revoir la maniere de stockage les connections

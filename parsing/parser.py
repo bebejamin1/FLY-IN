@@ -7,12 +7,12 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/13 13:30:59 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/20 15:13:58 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/23 13:08:17 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
 
-from .plateform import Hub, Connection
+from .plateform import Hub, Connection, Drone
 
 green = "\033[32m\033[1m\033[1m"
 red = "\033[31m\033[5m\033[1m"
@@ -29,6 +29,7 @@ class Level():
         self.start_hub: object = None
         self.end_hub: object = None
         self.hub: dict[str, object] = {}
+        self.drones: list[str, object] = {}
 
 # ============================= SET DRONES ====================================
 
@@ -56,7 +57,7 @@ class Level():
             ["normal", "blocked", "restricted", "priority"],
             ["orange", "blue", "red", "purple", "black", "brown", "green",
                 "gold", "maroon", "darkred", "crimson", "rainbow", "yellow",
-                "cyan", "lime", "violet"],
+                "cyan", "lime", "violet", "magenta"],
             []]
         try:
 
@@ -121,8 +122,17 @@ class Level():
                 for k, v in meta.items():
                     setattr(huber, k, v)
 
+            huber.zone = "start"
             self.start_hub = huber
             self.hub[huber.name] = huber
+
+            if (self.start_hub.max_drones == 1):
+                self.start_hub.max_drones = self.nbr_drones
+
+            i = 0
+            while (i <= self.nbr_drones):
+                self.drones[f"drone{i}"] = Drone(coord)
+                i += 1
 
         except (ValueError, TypeError) as e:
             print(f"{red}[ERROR]{reset} : ", e)
@@ -150,8 +160,12 @@ class Level():
                 for k, v in meta.items():
                     setattr(huber, k, v)
 
+            huber.zone = "end"
             self.end_hub = huber
             self.hub[huber.name] = huber
+
+            if (self.end_hub.max_drones == 1):
+                self.end_hub.max_drones = self.nbr_drones
 
         except (ValueError, TypeError) as e:
             print(f"{red}[ERROR]{reset} : ", e)
