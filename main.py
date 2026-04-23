@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/07 11:00:13 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/20 15:24:55 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/23 14:00:39 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -156,7 +156,11 @@ class MapSelector:
                 print(f"{red}[ERROR]{reset} Invalid. Try again.")
 
         except (UnboundLocalError, AttributeError, KeyboardInterrupt):
-            print("T con ?")
+            print("  Goodbye ... ;)")
+            exit()
+
+        except ValueError:
+            self.prompt_user()
 
         return (None)
 

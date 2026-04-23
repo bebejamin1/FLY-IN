@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/13 15:06:57 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/23 11:37:57 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/23 14:01:47 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -36,3 +36,4 @@ class Drone():
 
     def __init__(self, coord: tuple[int, int]):
         self.coord = coord
+        self.path = []

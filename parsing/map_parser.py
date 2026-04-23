@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/08 12:12:22 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/23 13:02:21 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/23 14:21:02 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -43,8 +43,6 @@ class MapParser():
                 f.seek(0)
                 for line in f:
 
-                    meta = None
-
                     if (line.startswith("nb_drones:")):
                         parse.set_drone(line[11:])
                         self.drones = True
@@ -54,26 +52,37 @@ class MapParser():
                             and self.drones is False):
                         raise ValueError(f"{red}[ERROR]{reset} : "
                               "The number of drones is not specified first")
-                        exit()
 
                     if (line.startswith("start_hub")):
-                        meta = line[line.find("["):]
-                        if (meta != 0):
-                            line = line[:line.find("[") - 1]
+                        meta = ""
+
+                        if ("[" in line):
+                            index_crochet = line.find("[")
+                            meta = line[index_crochet:]
+                            line = line[:index_crochet]
+
                         parse.create_start_hub(line[11:].strip().split(" "),
                                                meta[:-1])
 
                     if (line.startswith("hub:")):
-                        meta = line[line.find("["):]
-                        if (meta != 0):
-                            line = line[:line.find("[") - 1]
+                        meta = ""
+
+                        if ("[" in line):
+                            index_crochet = line.find("[")
+                            meta = line[index_crochet:]
+                            line = line[:index_crochet]
+
                         parse.create_hub(line[5:].strip().split(" "),
                                          meta[:-1])
 
                     if (line.startswith("end_hub")):
-                        meta = line[line.find("["):]
-                        if (meta != 0):
-                            line = line[:line.find("[") - 1]
+                        meta = ""
+
+                        if ("[" in line):
+                            index_crochet = line.find("[")
+                            meta = line[index_crochet:]
+                            line = line[:index_crochet]
+
                         parse.create_end_hub(line[9:].strip().split(" "),
                                              meta[:-1])
 

@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/13 13:30:59 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/23 13:08:17 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/23 13:52:39 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -29,7 +29,7 @@ class Level():
         self.start_hub: object = None
         self.end_hub: object = None
         self.hub: dict[str, object] = {}
-        self.drones: list[str, object] = {}
+        self.drones: dict[str, object] = {}
 
 # ============================= SET DRONES ====================================
 
