@@ -7,20 +7,16 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/20 10:45:00 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/23 13:25:56 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/23 13:31:47 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
 # python3 -m venv venv
 # source venv/bin/activate
 
-import warnings
 import arcade
 from parsing.parser import Level
 from display.round_manager import RoundManager
-
-# Supprime le warning de performance pour draw_text
-warnings.filterwarnings("ignore", message=".*draw_text is an extremely slow function.*")
 
 WINDOWS_WIDTH = 1920
 WINDOWS_HEIGHT = 1080
@@ -141,10 +137,11 @@ class GameView(arcade.Window):
             self.level.nbr_drones,
             self.level.start_hub.name if self.level.start_hub else "start"
         )
-        
+
         # Load drone texture
-        self.drone_texture = arcade.load_texture("display/resources/drone2.png")
-        
+        self.drone_texture = arcade.load_texture("display"
+                                                 "/resources/drone2.png")
+
         # Create sprite for each drone
         for i in range(self.level.nbr_drones):
             sprite = arcade.Sprite(self.drone_texture)
@@ -159,36 +156,36 @@ class GameView(arcade.Window):
             self.drone_sprites[i] = sprite
 
         # Auto-center the map
-        self._center_map()
+    #     self._center_map()
 
-    def _center_map(self) -> None:
-        """Center the map structure at the center of the screen"""
-        if not self.level.hub:
-            return
+    # def _center_map(self) -> None:
+    #     """Center the map structure at the center of the screen"""
+    #     if not self.level.hub:
+    #         return
 
-        # Calculate bounds
-        coords = [hub.coord for hub in self.level.hub.values()]
-        min_x = min(c[0] for c in coords)
-        max_x = max(c[0] for c in coords)
-        min_y = min(c[1] for c in coords)
-        max_y = max(c[1] for c in coords)
+    #     # Calculate bounds
+    #     coords = [hub.coord for hub in self.level.hub.values()]
+    #     min_x = min(c[0] for c in coords)
+    #     max_x = max(c[0] for c in coords)
+    #     min_y = min(c[1] for c in coords)
+    #     max_y = max(c[1] for c in coords)
 
-        # Store map boundaries for pan limiting (in world coordinates)
-        self.map_min_x = (min_x - 2) * GRID_SIZE + OFFSET_X
-        self.map_max_x = (max_x + 2) * GRID_SIZE + OFFSET_X
-        self.map_min_y = (min_y - 2) * GRID_SIZE + OFFSET_Y
-        self.map_max_y = (max_y + 2) * GRID_SIZE + OFFSET_Y
+    #     # Store map boundaries for pan limiting (in world coordinates)
+    #     self.map_min_x = (min_x - 2) * GRID_SIZE + OFFSET_X
+    #     self.map_max_x = (max_x + 2) * GRID_SIZE + OFFSET_X
+    #     self.map_min_y = (min_y - 2) * GRID_SIZE + OFFSET_Y
+    #     self.map_max_y = (max_y + 2) * GRID_SIZE + OFFSET_Y
 
-        # Calculate center of the hub structure
-        center_x = ((min_x + max_x) / 2) * GRID_SIZE + OFFSET_X
-        center_y = ((min_y + max_y) / 2) * GRID_SIZE + OFFSET_Y
+    #     # Calculate center of the hub structure
+    #     center_x = ((min_x + max_x) / 2) * GRID_SIZE + OFFSET_X
+    #     center_y = ((min_y + max_y) / 2) * GRID_SIZE + OFFSET_Y
 
-        # Set initial zoom to a reasonable level
-        self.zoom = 1.0
+    #     # Set initial zoom to a reasonable level
+    #     self.zoom = 1.0
 
-        # Center the structure at the screen center
-        self.pan_x = center_x
-        self.pan_y = center_y
+    #     # Center the structure at the screen center
+    #     self.pan_x = center_x
+    #     self.pan_y = center_y
 
     def execute_round(self) -> None:
         """Exécute un round: déplace tous les drones"""
