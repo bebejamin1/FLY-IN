@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/20 10:45:00 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/27 13:19:05 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/27 14:07:55 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -16,7 +16,7 @@
 
 import arcade
 from parsing.parser import Level
-# from display.round_manager import RoundManager
+from display.round_manager import RoundManager
 
 WINDOWS_WIDTH = 1920
 WINDOWS_HEIGHT = 1080
@@ -138,10 +138,7 @@ class GameView(arcade.Window):
                 )
 
         # Create round manager and drones
-        # self.round_manager = RoundManager(
-        #     self.level.nbr_drones,
-        #     self.level.start_hub.name if self.level.start_hub else "start"
-        # )
+        self.round_manager = RoundManager(self.level)
 
         # Load drone texture
         self.drone_texture = arcade.load_texture("display"
@@ -331,6 +328,16 @@ class GameView(arcade.Window):
             f"Hubs: {hub_count}", 10, WINDOWS_HEIGHT - 25,
             arcade.color.WHITE, 14
                         )
+
+    def next_round(self) -> None:
+        if self.round_manager:
+            # On demande au manager d'exécuter un tour
+            logs = self.round_manager.execute_round()
+
+            # S'il y a eu des mouvements, on les affiche dans le terminal
+            # comme l'exige le PDF de FLY-IN
+            if logs:
+                print(" ".join(logs))
 
 # *****************************************************************************
 # *                               Clamp                                       *
