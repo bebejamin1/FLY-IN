@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/07 11:00:13 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/24 10:01:03 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/27 16:41:09 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -19,6 +19,7 @@ from pathlib import Path
 
 from parsing.map_parser import MapParser
 from display.game_view import main as display_main
+from algorithm.dijkstra import Algorithm
 
 
 green = "\033[32m\033[1m\033[1m"
@@ -183,8 +184,9 @@ def main() -> None:
         level_load: MapParser | None = MapParser(map_level).parse_maps()
 
         # algorithm [[[]]]
+        level_finish = Algorithm(level_load).make_algo()
 
-        display_main(level_load)
+        display_main(level_finish)
 
         # next step
         # revoir la maniere de stockage les connections
