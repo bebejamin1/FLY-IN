@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/27 16:38:14 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/27 16:42:01 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/27 16:43:01 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -19,3 +19,6 @@ class Algorithm():
     def make_algo(self) -> object:
 
         return (self.level)
+
+
+# regarder lalgo dijkstra
