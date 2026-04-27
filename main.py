@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/07 11:00:13 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/23 17:27:26 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/24 10:01:03 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -180,7 +180,7 @@ def main() -> None:
         if (map_level is None):
             raise AttributeError("Program stopped")
 
-        level_load: MapParser | None = MapParser(map_level).parse_maps()  # noqa
+        level_load: MapParser | None = MapParser(map_level).parse_maps()
 
         # algorithm [[[]]]
 
@@ -188,6 +188,7 @@ def main() -> None:
 
         # next step
         # revoir la maniere de stockage les connections
+        x, y = level_load.drones["drone1"].coord
 
     except KeyboardInterrupt:
         print("Program canceled")

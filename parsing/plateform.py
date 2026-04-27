@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/13 15:06:57 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/23 14:01:47 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/27 13:44:08 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -15,18 +15,21 @@
 class Hub():
 
     def __init__(self, name: str, coord: tuple[int, int]):
+
         self.name = name
         self.coord = coord
         self.zone: str = "normal"
         self.color: str | None = None
         self.max_drones: int = 1
+        self.current = 0
         self.connection: list[object] = []
-        self.value: int = 0
+        self.value: int = 1
 
 
 class Connection():
 
     def __init__(self, way_1: object, way_2: object):
+
         self.max_link_capacity: int = 1
         self.way_1: object = way_1
         self.way_2: object = way_2
@@ -35,5 +38,6 @@ class Connection():
 class Drone():
 
     def __init__(self, coord: tuple[int, int]):
+
         self.coord = coord
-        self.path = []
+        self.path: list[str] = []

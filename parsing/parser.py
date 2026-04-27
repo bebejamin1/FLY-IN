@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/13 13:30:59 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/23 13:52:39 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/27 13:47:14 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -120,6 +120,9 @@ class Level():
 
             if (meta):
                 for k, v in meta.items():
+                    if (k == "zone"):
+                        raise ValueError("The start_hub cannot have a meta "
+                                         "tag for the zone")
                     setattr(huber, k, v)
 
             huber.zone = "start"
@@ -158,6 +161,9 @@ class Level():
 
             if (meta):
                 for k, v in meta.items():
+                    if (k == "zone"):
+                        raise ValueError("The end_hub cannot have a meta tag "
+                                         "for the zone")
                     setattr(huber, k, v)
 
             huber.zone = "end"
@@ -192,6 +198,10 @@ class Level():
             if (meta):
                 for k, v in meta.items():
                     setattr(huber, k, v)
+                    if (v == "blocked"):
+                        huber.max_drones = 0
+                    if (v == "restricted"):
+                        huber.value = 2
 
             self.hub[huber.name] = huber
 

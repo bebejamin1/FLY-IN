@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/20 10:45:00 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/23 17:16:28 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/27 13:19:05 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -16,7 +16,7 @@
 
 import arcade
 from parsing.parser import Level
-from display.round_manager import RoundManager
+# from display.round_manager import RoundManager
 
 WINDOWS_WIDTH = 1920
 WINDOWS_HEIGHT = 1080
@@ -86,10 +86,14 @@ class GameView(arcade.Window):
             "darkred": (139, 0, 0),
         }
 
+# *****************************************************************************
+# *                               setup                                       *
+# *                                                                           *
+
     def setup(self) -> None:
         self.background = arcade.load_texture(
             "display/resources/background.jpg"
-        )
+                                             )
 
         # Load hub textures
         self.hub_textures = {
@@ -134,14 +138,14 @@ class GameView(arcade.Window):
                 )
 
         # Create round manager and drones
-        self.round_manager = RoundManager(
-            self.level.nbr_drones,
-            self.level.start_hub.name if self.level.start_hub else "start"
-        )
+        # self.round_manager = RoundManager(
+        #     self.level.nbr_drones,
+        #     self.level.start_hub.name if self.level.start_hub else "start"
+        # )
 
         # Load drone texture
         self.drone_texture = arcade.load_texture("display"
-                                                 "/resources/drone2.png")
+                                                 "/resources/drone1.gif")
 
         # Create sprite for each drone
         for i in range(self.level.nbr_drones):
@@ -159,6 +163,10 @@ class GameView(arcade.Window):
 
         # Auto-center the map
         self._center_map()
+
+# *****************************************************************************
+# *                               Center                                      *
+# *                                                                           *
 
     def _center_map(self) -> None:
         if not self.level.hub:
@@ -188,40 +196,9 @@ class GameView(arcade.Window):
         self.pan_x = center_x
         self.pan_y = center_y
 
-    def execute_round(self) -> None:
-        if not self.is_paused and self.round_manager:
-            self.round_manager.execute_round()
-            self.current_round = self.round_manager.current_round
-
-    def next_round(self) -> None:
-        self.execute_round()
-
-    def pause(self) -> None:
-        self.is_paused = True
-
-    def resume(self) -> None:
-        self.is_paused = False
-
-    def on_update(self, delta_time: float) -> None:
-        if not self.is_paused:
-            self.frame_counter += 1
-            if self.frame_counter >= self.round_speed:
-                self.execute_round()
-                self.frame_counter = 0
-
-    def _clamp_pan(self) -> None:
-        visible_width = WINDOWS_WIDTH / self.zoom
-        visible_height = WINDOWS_HEIGHT / self.zoom
-
-        # Clamp pan position
-        self.pan_x = max(
-            self.map_min_x + visible_width / 2,
-            min(self.pan_x, self.map_max_x - visible_width / 2)
-        )
-        self.pan_y = max(
-            self.map_min_y + visible_height / 2,
-            min(self.pan_y, self.map_max_y - visible_height / 2)
-        )
+# *****************************************************************************
+# *                               Draw                                        *
+# *                                                                           *
 
     def on_draw(self) -> None:
         # Draw background first
@@ -289,7 +266,7 @@ class GameView(arcade.Window):
                 max(6, int(10 * self.zoom)),
                 anchor_x="center",
                 anchor_y="bottom"
-            )
+                           )
 
             # 2. Draw max_drones BELOW the hub
             arcade.draw_text(
@@ -297,10 +274,10 @@ class GameView(arcade.Window):
                 int(x),
                 int(y - (35 * self.zoom)),
                 arcade.color.RED,
-                max(6, int(8 * self.zoom)),
+                max(4, int(8 * self.zoom)),
                 anchor_x="center",
                 anchor_y="top"
-            )
+                           )
 
             # 3. Draw cost BELOW max_drones
             arcade.draw_text(
@@ -308,10 +285,10 @@ class GameView(arcade.Window):
                 int(x),
                 int(y - (50 * self.zoom)),
                 arcade.color.RED,
-                max(6, int(8 * self.zoom)),
+                max(4, int(8 * self.zoom)),
                 anchor_x="center",
                 anchor_y="top"
-            )
+                            )
 
         # Draw drones with transformation and zoom-adjusted scale
         for drone_id, drone_sprite in self.drone_sprites.items():
@@ -322,12 +299,12 @@ class GameView(arcade.Window):
                     hub = self.level.hub[current_hub_name]
                     drone_sprite.center_x = screen_x + (
                         hub.coord[0] * GRID_SIZE + OFFSET_X
-                    ) * self.zoom
+                                                       ) * self.zoom
                     drone_sprite.center_y = screen_y + (
                         hub.coord[1] * GRID_SIZE + OFFSET_Y
-                    ) * self.zoom
+                                                       ) * self.zoom
                     # Adjust drone scale based on zoom level
-                    drone_sprite.scale = 0.03 * self.zoom
+                    drone_sprite.scale = 0.08 * self.zoom
 
         self.drone_list.draw()
         # Draw round info in top-right corner
@@ -335,7 +312,7 @@ class GameView(arcade.Window):
             f"Round: {self.current_round}",
             WINDOWS_WIDTH - 150, WINDOWS_HEIGHT - 25,
             arcade.color.WHITE, 14
-        )
+                        )
 
         # Draw pause status
         pause_text = "PAUSED" if self.is_paused else "RUNNING"
@@ -346,19 +323,40 @@ class GameView(arcade.Window):
             pause_text,
             WINDOWS_WIDTH - 150, WINDOWS_HEIGHT - 50,
             pause_color, 12
-        )
+                        )
 
         # Draw hub count in top-left corner
         hub_count = len(self.level.hub)
         arcade.draw_text(
             f"Hubs: {hub_count}", 10, WINDOWS_HEIGHT - 25,
             arcade.color.WHITE, 14
-        )
+                        )
+
+# *****************************************************************************
+# *                               Clamp                                       *
+# *                                                                           *
+
+    def _clamp_pan(self) -> None:
+        visible_width = WINDOWS_WIDTH / self.zoom
+        visible_height = WINDOWS_HEIGHT / self.zoom
+
+        # Clamp pan position
+        self.pan_x = max(
+            self.map_min_x + visible_width / 2,
+            min(self.pan_x, self.map_max_x - visible_width / 2)
+                        )
+        self.pan_y = max(
+            self.map_min_y + visible_height / 2,
+            min(self.pan_y, self.map_max_y - visible_height / 2)
+                        )
+
+# *****************************************************************************
+# *                               Mouv                                        *
+# *                                                                           *
 
     def on_mouse_press(
         self, x: int, y: int, button: int, modifiers: int
-    ) -> None:
-        """Start panning with left mouse button"""
+                      ) -> None:
         if button == arcade.MOUSE_BUTTON_LEFT:
             self.panning = True
             self.last_mouse_x = x
@@ -366,13 +364,11 @@ class GameView(arcade.Window):
 
     def on_mouse_release(
         self, x: int, y: int, button: int, modifiers: int
-    ) -> None:
-        """Stop panning"""
+                        ) -> None:
         if button == arcade.MOUSE_BUTTON_LEFT:
             self.panning = False
 
     def on_mouse_motion(self, x: int, y: int, dx: int, dy: int) -> None:
-        """Pan the camera when left mouse button is held"""
         if self.panning:
             # Intuitive movement: moving mouse left moves view right
             self.pan_x -= dx / self.zoom
@@ -382,7 +378,6 @@ class GameView(arcade.Window):
     def on_mouse_scroll(
         self, x: int, y: int, scroll_x: int, scroll_y: int
     ) -> None:
-        """Zoom in/out towards center of screen"""
 
         # Update zoom based on scroll direction
         zoom_factor = 1.15
@@ -397,7 +392,6 @@ class GameView(arcade.Window):
         self._clamp_pan()
 
     def on_key_press(self, key: int, modifiers: int) -> None:
-        """Contrôles du clavier"""
         # SPACE: Execute round
         if key == arcade.key.SPACE:
             self.next_round()
@@ -423,6 +417,12 @@ class GameView(arcade.Window):
         # -: slow
         elif key == arcade.key.MINUS:
             self.round_speed += 1
+
+# *****************************************************************************
+# *                               Mouv                                        *
+# *                                                                           *
+
+# round manage
 
 
 def main(level: Level):
