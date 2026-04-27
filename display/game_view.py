@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/20 10:45:00 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/27 14:07:55 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/27 16:01:00 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -35,7 +35,8 @@ class GameView(arcade.Window):
 
     def __init__(self, level: Level) -> None:
 
-        super().__init__(WINDOWS_WIDTH, WINDOWS_HEIGHT, WINDOWS_TITLE)
+        super().__init__(WINDOWS_WIDTH, WINDOWS_HEIGHT, WINDOWS_TITLE,
+                         fullscreen=True)
 
         self.level = level
         self.background = None
@@ -54,11 +55,12 @@ class GameView(arcade.Window):
         self.last_mouse_x = 0
         self.last_mouse_y = 0
 
-        # Round management
-        self.current_round = 0
-        self.is_paused = False
-        self.round_speed = 2  # Nombre de frames avant le prochain round
-        self.frame_counter = 0
+        # --- NOUVEAU : Gestion du temps et des rounds ---
+        self.is_paused = True
+
+        # Le temps en secondes entre chaque round (1.0 = 1 round par seconde)
+        self.round_speed_seconds = 1.0
+        self.time_since_last_round = 0.0
 
         # Map boundaries
         self.map_min_x = 0
@@ -245,7 +247,6 @@ class GameView(arcade.Window):
 
         self.hub_sprites.draw()
 
-        # Draw hub info (name above hub, values below)
         for hub in self.level.hub.values():
             # Calculate hub world position
             world_x = hub.coord[0] * GRID_SIZE + OFFSET_X
@@ -254,7 +255,28 @@ class GameView(arcade.Window):
             x = screen_x + world_x * self.zoom
             y = screen_y + world_y * self.zoom
 
-            # 1. Draw name ABOVE the hub
+            rect_color = arcade.color.BLACK
+            if hub.color and hub.color.lower() != "white":
+                rect_color = self.color_map.get(hub.color.lower(),
+                                                arcade.color.BLACK)
+
+            # 2. Calcul des dimensions proportionnelles au texte et au zoom
+            rect_width = len(hub.name) * 11 * self.zoom
+            rect_height = 16 * self.zoom
+
+            # 3. Positionnement
+            # Le texte est ancré en "bottom" à y + 40.
+            # Le centre du rectangle doit donc être à y + 40 + (hauteur / 2)
+            rect_y_center = y + (40 * self.zoom) + (rect_height / 2)
+
+            # 4. Dessin du rectangle avec la syntaxe Arcade 3.3.3
+            arcade.draw_rect_filled(
+                arcade.XYWH(int(x), int(rect_y_center), int(rect_width),
+                            int(rect_height)),
+                rect_color
+            )
+
+            # --- DESSIN DU TEXTE (PAR-DESSUS) ---
             arcade.draw_text(
                 hub.name,
                 int(x),
@@ -263,20 +285,20 @@ class GameView(arcade.Window):
                 max(6, int(10 * self.zoom)),
                 anchor_x="center",
                 anchor_y="bottom"
-                           )
+            )
 
-            # 2. Draw max_drones BELOW the hub
+            # 2. Draw max_drones BELOW the hub (reste identique)
             arcade.draw_text(
-                f"Max drones:{hub.max_drones}",
+                f"Drone {hub.current}/{hub.max_drones}",
                 int(x),
                 int(y - (35 * self.zoom)),
                 arcade.color.RED,
                 max(4, int(8 * self.zoom)),
                 anchor_x="center",
                 anchor_y="top"
-                           )
+            )
 
-            # 3. Draw cost BELOW max_drones
+            # 3. Draw cost BELOW max_drones (reste identique)
             arcade.draw_text(
                 f"Cost:{hub.value}",
                 int(x),
@@ -285,49 +307,79 @@ class GameView(arcade.Window):
                 max(4, int(8 * self.zoom)),
                 anchor_x="center",
                 anchor_y="top"
-                            )
-
-        # Draw drones with transformation and zoom-adjusted scale
-        for drone_id, drone_sprite in self.drone_sprites.items():
-            if self.round_manager:
-                current_hub_name = self.round_manager\
-                                       .get_drone_current_hub(drone_id)
-                if current_hub_name in self.level.hub:
-                    hub = self.level.hub[current_hub_name]
-                    drone_sprite.center_x = screen_x + (
-                        hub.coord[0] * GRID_SIZE + OFFSET_X
-                                                       ) * self.zoom
-                    drone_sprite.center_y = screen_y + (
-                        hub.coord[1] * GRID_SIZE + OFFSET_Y
-                                                       ) * self.zoom
-                    # Adjust drone scale based on zoom level
-                    drone_sprite.scale = 0.08 * self.zoom
+            )
 
         self.drone_list.draw()
-        # Draw round info in top-right corner
-        arcade.draw_text(
-            f"Round: {self.current_round}",
-            WINDOWS_WIDTH - 150, WINDOWS_HEIGHT - 25,
-            arcade.color.WHITE, 14
-                        )
 
-        # Draw pause status
+        # --- INTERFACE UTILISATEUR (UI) FIXE SUR L'ÉCRAN ---
+
+        # 1. Statut en haut à gauche
         pause_text = "PAUSED" if self.is_paused else "RUNNING"
-        pause_color = arcade.color.RED if self.is_paused\
-            else arcade.color.GREEN
+
+        status_text = (
+            f"Round: {self.round_manager.current_round}\n"
+            f"Status: {pause_text}\n"
+            f"Speed: {self.round_speed_seconds:.1f}s / round\n"
+            f"Completed drones {self.level.end_hub.current}/"
+            f"{self.level.nbr_drones}"
+        )
 
         arcade.draw_text(
-            pause_text,
-            WINDOWS_WIDTH - 150, WINDOWS_HEIGHT - 50,
-            pause_color, 12
-                        )
+            status_text, 20, self.height - 20,
+            arcade.color.WHITE, 14,
+            anchor_x="left", anchor_y="top", multiline=True, width=300
+        )
 
-        # Draw hub count in top-left corner
-        hub_count = len(self.level.hub)
+        # 2. Commandes en bas à droite
+        controls_text = (
+            "--- CONTROLS ---\n"
+            "[SPACE] : Play / Pause\n"
+            "[ + ] : Speed Up\n"
+            "[ - ] : Speed Down\n"
+            "[ R ] : Reset Simulation\n"
+            "[ Q ] : Quit Simulation\n"
+            "[Mouse] : Pan & Scroll"
+        )
+
         arcade.draw_text(
-            f"Hubs: {hub_count}", 10, WINDOWS_HEIGHT - 25,
-            arcade.color.WHITE, 14
-                        )
+            controls_text, 20, 20,
+            arcade.color.BLACK, 12,
+            anchor_x="left", anchor_y="bottom",
+            multiline=True, width=300, align="left"
+        )
+
+        if self.level.end_hub.current == self.level.nbr_drones:
+            # On met le jeu en pause automatiquement
+            self.is_paused = True
+
+            # Fond sombre et transparent pour assombrir le jeu derrière
+            # (0, 0, 0, 180) = Noir avec 180 d'opacité (sur 255)
+            arcade.draw_rect_filled(
+                arcade.XYWH(0, 0, 1920, 1080),
+                (0, 0, 0, 180)
+            )
+
+            # Texte FINISH géant au centre
+            arcade.draw_text(
+                "FINISH",
+                self.width / 2, self.height / 2 + 30,
+                arcade.color.GOLD,
+                80,
+                anchor_x="center", anchor_y="center", bold=True
+            )
+
+            # Instructions en dessous
+            arcade.draw_text(
+                "Press [ R ] to Restart or [ Q ] to Quit",
+                self.width / 2, self.height / 2 - 50,
+                arcade.color.WHITE,
+                20,
+                anchor_x="center", anchor_y="center"
+            )
+
+# *****************************************************************************
+# *                               Round                                       *
+# *                                                                           *
 
     def next_round(self) -> None:
         if self.round_manager:
@@ -338,6 +390,53 @@ class GameView(arcade.Window):
             # comme l'exige le PDF de FLY-IN
             if logs:
                 print(" ".join(logs))
+
+# *****************************************************************************
+# *                              Animate                                      *
+# *                                                                           *
+
+    def on_update(self, delta_time: float) -> None:
+
+        if not self.round_manager:
+            return
+
+        # 1. --- LOGIQUE D'AVANCEMENT AUTOMATIQUE ---
+        if not self.is_paused:
+            self.time_since_last_round += delta_time
+
+            if self.time_since_last_round >= self.round_speed_seconds:
+                self.next_round()
+                self.time_since_last_round = 0.0
+
+        # 2. --- LOGIQUE D'ANIMATION FLUIDE (Lerp) ---
+        screen_x = self.width / 2 - self.pan_x * self.zoom
+        screen_y = self.height / 2 - self.pan_y * self.zoom
+        ANIMATION_SPEED = 8.0
+
+        for drone_id, drone_sprite in self.drone_sprites.items():
+            drone_key = f"drone{drone_id}"
+            if drone_key not in self.round_manager.drones:
+                continue
+            drone = self.round_manager.drones[drone_key]
+
+            if drone.hub_current == "IN_TRANSIT":
+                source_hub = self.level.hub[drone.transit_source]
+                dest_hub = self.level.hub[drone.transit_destination]
+                world_x = (source_hub.coord[0] + dest_hub.coord[0]) / 2
+                world_y = (source_hub.coord[1] + dest_hub.coord[1]) / 2
+            else:
+                hub = self.level.hub[drone.hub_current]
+                world_x = hub.coord[0]
+                world_y = hub.coord[1]
+
+            target_x = screen_x + (world_x * GRID_SIZE + OFFSET_X) * self.zoom
+            target_y = screen_y + (world_y * GRID_SIZE + OFFSET_Y) * self.zoom
+
+            drone_sprite.center_x += (target_x - drone_sprite.center_x)\
+                * ANIMATION_SPEED * delta_time
+            drone_sprite.center_y += (target_y - drone_sprite.center_y)\
+                * ANIMATION_SPEED * delta_time
+            drone_sprite.scale = 0.08 * self.zoom
 
 # *****************************************************************************
 # *                               Clamp                                       *
@@ -399,37 +498,30 @@ class GameView(arcade.Window):
         self._clamp_pan()
 
     def on_key_press(self, key: int, modifiers: int) -> None:
-        # SPACE: Execute round
-        if key == arcade.key.SPACE:
-            self.next_round()
+        # Q: Quitter
+        if key == arcade.key.Q:
+            self.close()
 
-        # P: Pause/Resume
-        elif key == arcade.key.P:
-            if self.is_paused:
-                self.resume()
-            else:
-                self.pause()
+        # ESPACE: Play/Pause
+        elif key == arcade.key.SPACE:
+            self.is_paused = not self.is_paused
 
         # R: Reset
         elif key == arcade.key.R:
             if self.round_manager:
                 self.round_manager.reset()
                 self.current_round = 0
-                self.frame_counter = 0
+                self.time_since_last_round = 0.0
+                self.is_paused = True
 
-        # +: speed
-        elif key == arcade.key.PLUS or key == arcade.key.EQUAL:
-            self.round_speed = max(1, self.round_speed - 1)
+        # +: Accélérer (Diminue le temps entre chaque round)
+        elif key == arcade.key.PLUS or key == arcade.key.NUM_ADD\
+                or key == arcade.key.EQUAL:
+            self.round_speed_seconds = max(0.1, self.round_speed_seconds - 0.2)
 
-        # -: slow
-        elif key == arcade.key.MINUS:
-            self.round_speed += 1
-
-# *****************************************************************************
-# *                               Mouv                                        *
-# *                                                                           *
-
-# round manage
+        # -: Ralentir (Augmente le temps entre chaque round)
+        elif key == arcade.key.MINUS or key == arcade.key.NUM_SUBTRACT:
+            self.round_speed_seconds = min(5.0, self.round_speed_seconds + 0.2)
 
 
 def main(level: Level):
