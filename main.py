@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/07 11:00:13 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/27 16:41:09 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/27 16:48:30 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -183,13 +183,10 @@ def main() -> None:
 
         level_load: MapParser | None = MapParser(map_level).parse_maps()
 
-        # algorithm [[[]]]
-        level_finish = Algorithm(level_load).make_algo()
+        level_algo = Algorithm(level_load).make_algo()
 
-        display_main(level_finish)
+        display_main(level_algo)
 
-        # next step
-        # revoir la maniere de stockage les connections
         x, y = level_load.drones["drone1"].coord
 
     except KeyboardInterrupt:
