@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/13 13:30:59 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/27 13:47:14 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/27 16:33:55 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -133,7 +133,7 @@ class Level():
                 self.start_hub.max_drones = self.nbr_drones
 
             i = 0
-            while (i <= self.nbr_drones):
+            while (i < self.nbr_drones):
                 self.drones[f"drone{i}"] = Drone(coord)
                 i += 1
 

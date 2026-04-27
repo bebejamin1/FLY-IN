@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/20 10:45:00 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/27 16:01:00 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/27 16:27:01 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -355,9 +355,9 @@ class GameView(arcade.Window):
             # Fond sombre et transparent pour assombrir le jeu derrière
             # (0, 0, 0, 180) = Noir avec 180 d'opacité (sur 255)
             arcade.draw_rect_filled(
-                arcade.XYWH(0, 0, 1920, 1080),
-                (0, 0, 0, 180)
-            )
+                arcade.XYWH(self.width / 2, self.height / 2, self.width,
+                            self.height), (0, 0, 0, 180)
+                                    )
 
             # Texte FINISH géant au centre
             arcade.draw_text(

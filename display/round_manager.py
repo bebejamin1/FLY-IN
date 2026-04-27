@@ -7,16 +7,14 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/23 13:30:00 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/27 15:55:07 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/27 16:36:06 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
 from parsing.map_parser import Level
-# from parsing.plateform import Drone
 
 
 class RoundManager:
-    """Gestionnaire central de la logique du jeu et des mouvements."""
 
     def __init__(self, level: Level) -> None:
         self.level = level
@@ -34,6 +32,8 @@ class RoundManager:
             drone.transit_source = None
             drone.transit_destination = None
 
+# ========================== EXECUTE ROUND ====================================
+
     def execute_round(self) -> list[str]:
         self.current_round += 1
         round_logs = []
@@ -47,7 +47,6 @@ class RoundManager:
             if drone.delivered:
                 continue
 
-            # --- CAS 1 : LE DRONE EST DÉJÀ EN TRANSIT (Second Round) ---
             if drone.in_transit:
                 drone.in_transit = False
                 drone.previous_hub = drone.transit_source
@@ -59,18 +58,15 @@ class RoundManager:
                 round_logs.append(f"D{d_id}-{drone.hub_current}")
                 continue
 
-            # --- CAS 2 : LE DRONE CHERCHE À SE DÉPLACER ---
             current_hub = self.level.hub[drone.hub_current]
             best_next_hub = self._get_best_available_neighbor(
                     current_hub, drone.previous_hub
                                                              )
 
             if best_next_hub:
-                # Le drone quitte son hub (on libère la place)
-                if current_hub.name != self.level.start_hub.name:
-                    current_hub.current -= 1
 
-                # Si c'est un Restricted (Mouvement en 2 tours)
+                current_hub.current -= 1
+
                 if best_next_hub.zone == "restricted":
                     drone.in_transit = True
                     drone.transit_source = current_hub.name
@@ -82,7 +78,6 @@ class RoundManager:
                     round_logs.append(f"D{d_id}-{current_hub.name}-"
                                       f"{best_next_hub.name}")
 
-                # Mouvement Normal / Priority (1 tour)
                 else:
                     drone.previous_hub = current_hub.name
                     drone.hub_current = best_next_hub.name
@@ -95,6 +90,8 @@ class RoundManager:
                     round_logs.append(f"D{d_id}-{best_next_hub.name}")
 
         return round_logs
+
+# =========================== GET NEIGHBOR ====================================
 
     def _get_best_available_neighbor(self, hub,
                                      previous_hub_name) -> object | None:
@@ -125,6 +122,8 @@ class RoundManager:
 
         valid_neighbors.sort(key=lambda x: x.value)
         return valid_neighbors[0]
+
+# ============================== RESET ========================================
 
     def reset(self) -> None:
         self.current_round = 0
