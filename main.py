@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/07 11:00:13 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/27 16:48:30 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/04/28 10:54:15 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -187,7 +187,7 @@ def main() -> None:
 
         display_main(level_algo)
 
-        x, y = level_load.drones["drone1"].coord
+        # x, y = level_load.drones["drone1"].coord
 
     except KeyboardInterrupt:
         print("Program canceled")
