@@ -1,14 +1,14 @@
-# ************************************************************************* #
-#                                                                           #
-#                                                      :::      ::::::::    #
-#  Makefile                                          :+:      :+:    :+:    #
-#                                                  +:+ +:+         +:+      #
-#  By: fcaval <fcaval@student.42.fr>             +#+  +:+       +#+         #
-#                                              +#+#+#+#+#+   +#+            #
-#  Created: 2026/04/24 13:54:45 by fcaval          #+#    #+#               #
-#  Updated: 2026/04/24 14:26:52 by fcaval          ###   ########.fr        #
-#                                                                           #
-# ************************************************************************* #
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: bbeaurai <bbeaurai@student.42lehavre.fr    +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2026/05/01 13:20:39 by bbeaurai          #+#    #+#              #
+#    Updated: 2026/05/01 13:20:43 by bbeaurai         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
 PYTHON = ./venv/bin/python3
 PIP = ./venv/bin/pip
@@ -79,6 +79,7 @@ clean :
 	@find . -name "__pycache__" -exec rm -rf {} \+
 	@find . -name ".mypy_cache" -exec rm -rf {} \+
 	@find . -name ".vscode" -exec rm -rf {} \+
+	@find . -name "venv" -exec rm -rf {} \+
 	@echo "$(GREEN)DELETE [OK]...$(NC)"
 
 uninstall : requirement.txt
