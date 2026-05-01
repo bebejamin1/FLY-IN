@@ -1,7 +1,7 @@
 nb_drones: 10
 
 start_hub: start 0 0
-hub: waypoint1 1 0 [color=lime max_drones=3]
+hub: waypoint1 1 0 [color=lime max_drones=10]
 hub: quarantine 1 1 [color=blue max_drones=2 zone=restricted]
 hub: blocked 1 -1 [color=red max_drones=50 zone=blocked]
 
@@ -15,7 +15,7 @@ hub: impass 0 -1 [color=orange max_drones=1 zone=priority]
 hub: bridge 1 3 [color=red max_drones=10 zone=priority]
 hub: waypoint2 2 0 [color=blue]
 hub: isolated 4 3 [color=salmon zone=restricted]
-end_hub: goal 3 0 [color=red max_drones=5]
+end_hub: goal 3 0 [color=red max_drones=10]
 
 connection: start-waypoint1
 connection: start-quarantine

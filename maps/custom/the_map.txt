@@ -1,7 +1,7 @@
 nb_drones: 100
 
-start_hub: cargo 0 0 [color=green max_drones=20]
-end_hub: warehouse 10 -3 [color=light_gray max_drones=20]
+start_hub: cargo 0 0 [color=green max_drones=100]
+end_hub: warehouse 10 -3 [color=orange max_drones=100]
 
 hub: house1 1 0 [color=orange max_drones=10 zone=normal]
 hub: house2 2 0 [color=orange max_drones=10 zone=normal]

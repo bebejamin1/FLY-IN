@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/13 13:30:59 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/27 16:33:55 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/01 11:01:40 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -57,7 +57,8 @@ class Level():
             ["normal", "blocked", "restricted", "priority"],
             ["orange", "blue", "red", "purple", "black", "brown", "green",
                 "gold", "maroon", "darkred", "crimson", "rainbow", "yellow",
-                "cyan", "lime", "violet", "magenta"],
+                "cyan", "lime", "violet", "magenta", "salmon", "white",
+                "gray"],
             []]
         try:
 
@@ -263,12 +264,3 @@ class Level():
         except (NameError, KeyError) as e:
             print(f"{red}[ERROR]{reset} : {line}, {e}")
             exit()
-
-
-if __name__ == "__main__":
-    test = Level()
-    # test.start_hub = "gegsgs"
-    test.hub["ok"] = "gkro"
-    line = ["ok", "0", "0"]
-    meta = ""
-    start = test.create_start_hub(line, meta)

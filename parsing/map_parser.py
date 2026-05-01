@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/08 12:12:22 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/23 14:21:02 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/01 11:01:55 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -130,10 +130,3 @@ class MapParser():
                   "there must be a parent file named “maps” "
                   "that contains text files")
             exit()
-
-
-if __name__ == "__main__":
-    level = "maps/error/blocked.txt"
-    map = MapParser(level)
-    level_data = map.parse_maps()
-    print(level_data)

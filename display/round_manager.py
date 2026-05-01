@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/23 13:30:00 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/28 13:35:22 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/01 10:45:54 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -93,15 +93,15 @@ class RoundManager:
 
 # =========================== GET NEIGHBOR ====================================
 
-    def _get_best_available_neighbor(self, hub,
-                                     previous_hub_name) -> object | None:
+    def _get_best_available_neighbor(self, hub: object,
+                                     previous_hub_name: str) -> object | None:
         valid_neighbors = []
+        all_possible_neighbors = []
 
         for conn in hub.connection:
             neighbor_name = conn.way_2 if conn.way_1 == hub.name\
                                        else conn.way_1
 
-            # INTERDIT DE REVENIR EN ARRIÈRE
             if neighbor_name == previous_hub_name:
                 continue
 
@@ -110,6 +110,8 @@ class RoundManager:
             if (neighbor.zone == "blocked"
                     or getattr(neighbor, 'max_drones', 1) == 0):
                 continue
+            
+            all_possible_neighbors.append(neighbor)
 
             if (neighbor.name != self.level.end_hub.name):
                 if (neighbor.current >= neighbor.max_drones):
@@ -117,11 +119,27 @@ class RoundManager:
 
             valid_neighbors.append(neighbor)
 
+        if not all_possible_neighbors:
+            return None
+
+        all_possible_neighbors.sort(key=lambda x: x.value)
+        absolute_best = all_possible_neighbors[0]
+
         if not valid_neighbors:
             return None
 
         valid_neighbors.sort(key=lambda x: x.value)
-        return valid_neighbors[0]
+        best_available = valid_neighbors[0]
+
+        MAX_WEIGHT_DIFF = 50
+
+        if (absolute_best.name != self.level.end_hub.name and
+                absolute_best.current >= absolute_best.max_drones):
+            
+            if (best_available.value - absolute_best.value) >= MAX_WEIGHT_DIFF:
+                return None
+
+        return best_available
 
 # ============================== RESET ========================================
 

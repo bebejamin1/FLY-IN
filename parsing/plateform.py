@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/13 15:06:57 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/04/27 13:58:05 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/01 11:01:45 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -41,5 +41,4 @@ class Drone():
 
         self.coord = coord
         self.hub_current: str = None
-        # str qui doit contenir le nom du hub actuel ou se trouve le drone
         self.path: list[str] = []
