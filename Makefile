@@ -6,7 +6,7 @@
 #    By: bbeaurai <bbeaurai@student.42lehavre.fr    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/01 13:20:39 by bbeaurai          #+#    #+#              #
-#    Updated: 2026/05/01 13:20:43 by bbeaurai         ###   ########.fr        #
+#    Updated: 2026/05/01 14:18:11 by bbeaurai         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,6 @@ PIP = ./venv/bin/pip
 FLAKE8 = venv/lib/python3.10/site-packages/flake8
 MYPY = venv/lib/python3.10/site-packages/mypy
 ARCADE = venv/lib/python3.10/site-packages/arcade
-TYPING = venv/lib/python3.10/site-packages/typing-extensions
 
 RED = \033[0;31m
 GREEN = \033[0;32m
@@ -43,10 +42,7 @@ $(MYPY) :
 $(ARCADE) :
 	@$(PIP) install -q -r requirement.txt
 
-$(TYPING) :
-	@$(PIP) install -q -r requirement.txt
-	
-install : venv/bin/activate requirement.txt $(FLAKE8) $(MYPY) $(ARCADE) $(TYPING)
+install : venv/bin/activate requirement.txt $(FLAKE8) $(MYPY) $(ARCADE)
 
 
 run : install
@@ -58,6 +54,7 @@ debug :
 	$(PYTHON) -m pdb main.py
 
 lint : install
+	clear
 	@echo ""
 	@echo "$(RED)TESTING FLAKE8 / MYPY...$(NC)"
 	@. ./venv/bin/activate && \
@@ -66,6 +63,7 @@ lint : install
 	@echo ""
 
 lint-strict : install
+	clear
 	@echo ""
 	@echo "$(RED)TESTING FLAKE8 / MYPY STRICT...$(NC)"
 	@. ./venv/bin/activate && \

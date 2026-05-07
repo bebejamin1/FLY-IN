@@ -12,6 +12,8 @@
 # ########################################################################### #
 
 
+from pathlib import Path
+
 from .parser import Level
 
 
@@ -25,7 +27,7 @@ reset = "\033[0m"
 
 class MapParser():
 
-    def __init__(self, level: str) -> None:
+    def __init__(self, level: str | Path) -> None:
         self.level = f"{level}"
         self.drones = False
 

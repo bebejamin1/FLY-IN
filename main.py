@@ -18,6 +18,7 @@ import random
 from pathlib import Path
 
 from parsing.map_parser import MapParser
+from parsing.parser import Level
 from display.game_view import main as display_main
 from algorithm.dijkstra import Algorithm
 
@@ -74,7 +75,7 @@ class MapSelector:
 
         return (list(self.directory.rglob("")))
 
-    def get_available_level(self, map_file: str) -> list[Path]:
+    def get_available_level(self, map_file: str | Path) -> list[Path]:
 
         folder = Path(map_file)
 
@@ -114,10 +115,10 @@ class MapSelector:
                     if (int(choice_file) == len(files) + 1):
                         sys.exit()
 
-                index: int = int(choice_file) - 1
+                index_file: int = int(choice_file) - 1
 
-                if (0 <= index < len(files)):
-                    map_files: Path = files[index]
+                if (0 <= index_file < len(files)):
+                    map_files: Path = files[index_file]
                     break
 
                 print(f"{red}[ERROR]{reset} Invalid. Try again.")
@@ -148,10 +149,10 @@ class MapSelector:
                     if (int(choise_level) == (len(levels) + 1)):
                         self.prompt_user()
 
-                    index: int = int(choise_level) - 1
+                    index_level: int = int(choise_level) - 1
 
-                if 0 <= index < len(levels):
-                    level: Path = levels[index]
+                if 0 <= index_level < len(levels):
+                    level: Path = levels[index_level]
                     return (level)
 
                 print(f"{red}[ERROR]{reset} Invalid. Try again.")
@@ -181,9 +182,9 @@ def main() -> None:
         if (map_level is None):
             raise AttributeError("Program stopped")
 
-        level_load: MapParser | None = MapParser(map_level).parse_maps()
+        level_load: Level = MapParser(map_level).parse_maps()
 
-        level_algo = Algorithm(level_load).make_algo()
+        level_algo: Level = Algorithm(level_load).make_algo()
 
         display_main(level_algo)
 

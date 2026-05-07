@@ -7,15 +7,19 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/20 10:45:00 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/05/01 11:15:51 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/05 10:22:18 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
 # python3 -m venv venv
 # source venv/bin/activate
 
+from typing import TypeAlias, cast
+
 import arcade
+from arcade.types import RGBOrA255
 from parsing.parser import Level
+from parsing.plateform import Hub
 from display.round_manager import RoundManager
 
 WINDOWS_WIDTH = 1920
@@ -29,41 +33,48 @@ OFFSET_Y = 25
 MIN_ZOOM = 0.5
 MAX_ZOOM = 7.00
 
+Point: TypeAlias = tuple[int, int]
+ConnectionLine: TypeAlias = tuple[Point, Point, int]
+
 
 class GameView(arcade.Window):
 
     def __init__(self, level: Level) -> None:
 
         super().__init__(WINDOWS_WIDTH, WINDOWS_HEIGHT, WINDOWS_TITLE,
-                         fullscreen=True)
+                         fullscreen=False)
 
         self.level = level
-        self.background = None
-        self.hub_sprites = arcade.SpriteList()
-        self.drone_sprites = {}
-        self.drone_list = arcade.SpriteList()
-        self.connection_lines = []
-        self.round_manager = None
-        self.drone_texture = None
+        self.background: arcade.Texture | None = None
+        self.hub_textures: dict[str, arcade.Texture] = {}
+        self.hub_sprites: arcade.SpriteList[arcade.Sprite] = (
+            arcade.SpriteList()
+        )
+        self.drone_sprites: dict[int, arcade.Sprite] = {}
+        self.drone_list: arcade.SpriteList[arcade.Sprite] = arcade.SpriteList()
+        self.connection_lines: list[ConnectionLine] = []
+        self.round_manager: RoundManager | None = None
+        self.drone_texture: arcade.Texture | None = None
 
         self.zoom = 1.0
-        self.pan_x = 0
-        self.pan_y = 0
+        self.pan_x: float = 0.0
+        self.pan_y: float = 0.0
         self.panning = False
         self.last_mouse_x = 0
         self.last_mouse_y = 0
+        self.current_round = 0
 
         self.is_paused = True
 
         self.round_speed_seconds = 1.0
         self.time_since_last_round = 0.0
 
-        self.map_min_x = 0
-        self.map_max_x = WINDOWS_WIDTH
-        self.map_min_y = 0
-        self.map_max_y = WINDOWS_HEIGHT
+        self.map_min_x: float = 0.0
+        self.map_max_x: float = WINDOWS_WIDTH
+        self.map_min_y: float = 0.0
+        self.map_max_y: float = WINDOWS_HEIGHT
 
-        self.color_map = {
+        self.color_map: dict[str, RGBOrA255] = {
             "red": arcade.color.RED,
             "blue": arcade.color.BLUE,
             "green": arcade.color.GREEN,
@@ -102,7 +113,7 @@ class GameView(arcade.Window):
                 "display/resources/RESTRICTED.png"
             ),
             "priority": arcade.load_texture("display/resources/PRIORITY.png"),
-        }
+                           }
 
         for hub in self.level.hub.values():
             texture = self.hub_textures.get(
@@ -115,10 +126,11 @@ class GameView(arcade.Window):
             sprite.center_y = hub.coord[1] * GRID_SIZE + OFFSET_Y
             self.hub_sprites.append(sprite)
 
-        drawn_connections = set()
+        drawn_connections: set[tuple[str, str]] = set()
         for hub in self.level.hub.values():
             for conn in hub.connection:
-                conn_key = tuple(sorted([conn.way_1, conn.way_2]))
+                way_1, way_2 = sorted((conn.way_1, conn.way_2))
+                conn_key = (way_1, way_2)
                 if conn_key in drawn_connections:
                     continue
                 drawn_connections.add(conn_key)
@@ -186,9 +198,10 @@ class GameView(arcade.Window):
 
     def on_draw(self) -> None:
 
-        if self.background:
+        background = self.background
+        if background is not None:
             arcade.draw_texture_rect(
-                self.background,
+                background,
                 arcade.LBWH(0, 0, WINDOWS_WIDTH, WINDOWS_HEIGHT)
             )
         else:
@@ -210,7 +223,7 @@ class GameView(arcade.Window):
 
             arcade.draw_text(
                 str(capacity), int(mid_x), int(mid_y),
-                arcade.color.RED, max(6, int(10 * self.zoom)),
+                arcade.color.BLACK, max(6, int(10 * self.zoom)),
                 anchor_x="center"
                             )
 
@@ -236,7 +249,7 @@ class GameView(arcade.Window):
             x = screen_x + world_x * self.zoom
             y = screen_y + world_y * self.zoom
 
-            rect_color = arcade.color.BLACK
+            rect_color: RGBOrA255 = arcade.color.BLACK
             if hub.color and hub.color.lower() != "white":
                 rect_color = self.color_map.get(hub.color.lower(),
                                                 arcade.color.BLACK)
@@ -286,11 +299,14 @@ class GameView(arcade.Window):
 
         pause_text = "PAUSED" if self.is_paused else "RUNNING"
 
+        round_manager = cast(RoundManager, self.round_manager)
+        end_hub = cast(Hub, self.level.end_hub)
+
         status_text = (
-            f"Round: {self.round_manager.current_round}\n"
+            f"Round: {round_manager.current_round}\n"
             f"Status: {pause_text}\n"
             f"Speed: {self.round_speed_seconds:.1f}s / round\n"
-            f"Completed drones {self.level.end_hub.current}/"
+            f"Completed drones {end_hub.current}/"
             f"{self.level.nbr_drones}"
         )
 
@@ -317,7 +333,7 @@ class GameView(arcade.Window):
             multiline=True, width=300, align="left"
         )
 
-        if self.level.end_hub.current == self.level.nbr_drones:
+        if end_hub.current == self.level.nbr_drones:
 
             self.is_paused = True
 
@@ -363,6 +379,8 @@ class GameView(arcade.Window):
         if not self.round_manager:
             return
 
+        round_manager = self.round_manager
+
         if not self.is_paused:
             self.time_since_last_round += delta_time
 
@@ -376,13 +394,15 @@ class GameView(arcade.Window):
 
         for drone_id, drone_sprite in self.drone_sprites.items():
             drone_key = f"drone{drone_id}"
-            if drone_key not in self.round_manager.drones:
+            if drone_key not in round_manager.drones:
                 continue
-            drone = self.round_manager.drones[drone_key]
+            drone = round_manager.drones[drone_key]
 
             if drone.hub_current == "IN_TRANSIT":
-                source_hub = self.level.hub[drone.transit_source]
-                dest_hub = self.level.hub[drone.transit_destination]
+                source_hub = self.level.hub[cast(str, drone.transit_source)]
+                dest_hub = self.level.hub[
+                    cast(str, drone.transit_destination)
+                ]
                 world_x = (source_hub.coord[0] + dest_hub.coord[0]) / 2
                 world_y = (source_hub.coord[1] + dest_hub.coord[1]) / 2
             else:
@@ -442,7 +462,7 @@ class GameView(arcade.Window):
             self._clamp_pan()
 
     def on_mouse_scroll(
-        self, x: int, y: int, scroll_x: int, scroll_y: int
+        self, x: int, y: int, scroll_x: float, scroll_y: float
     ) -> None:
 
         zoom_factor = 1.15
@@ -478,7 +498,7 @@ class GameView(arcade.Window):
             self.round_speed_seconds = min(5.0, self.round_speed_seconds + 0.2)
 
 
-def main(level: Level):
+def main(level: Level) -> None:
     windows = GameView(level)
     windows.setup()
     arcade.run()
@@ -488,7 +508,6 @@ if __name__ == "__main__":
     level = Level()
     level.nbr_drones = 2
 
-    from parsing.plateform import Hub
     hub1 = Hub("start", (0, 0))
     hub1.zone = "start"
     level.start_hub = hub1

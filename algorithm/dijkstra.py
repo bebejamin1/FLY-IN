@@ -7,14 +7,24 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/27 16:38:14 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/05/01 11:37:29 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/05 12:56:47 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
+from parsing.parser import Level
+from parsing.plateform import Hub
+
+
 class Algorithm():
 
-    def __init__(self, level: object) -> None:
+    def __init__(self, level: Level) -> None:
         self.level = level
+
+        if (self.level.start_hub is None):
+            raise ("start_hub missing")
+        if (self.level.end_hub is None):
+            raise ("end_hub missing")
+
         self.end: str = level.hub[self.level.end_hub.name].name
 
 # ============================= DEAD END ======================================
@@ -23,22 +33,24 @@ class Algorithm():
 
         for hub in self.level.hub.values():
 
-            if hub.name == self.level.start_hub.name or hub.name == self.level.end_hub.name:
+            if (hub.name == self.level.start_hub.name
+                    or hub.name == self.level.end_hub.name):
                 continue
 
             valid_connections_count = 0
             for con in hub.connection:
-                neighbor_name = con.way_2 if con.way_1 == hub.name else con.way_1
+                neighbor_name = con.way_2 if con.way_1 == hub.name\
+                                          else con.way_1
                 neighbor_hub = self.level.hub[neighbor_name]
-                if neighbor_hub.zone != "blocked":
+                if (neighbor_hub.zone != "blocked"):
                     valid_connections_count += 1
 
-            if valid_connections_count == 1:
+            if (valid_connections_count == 1):
                 hub.value = 888888
 
 # ============================== VALUE ========================================
 
-    def determine_value(self, hub: object, save_path: list[str]) -> int:
+    def determine_value(self, hub: Hub, save_path: list[str]) -> int:
 
         value = 0
 
@@ -66,7 +78,7 @@ class Algorithm():
 
 # ============================= NEIGHBOR ======================================
 
-    def find_neighbor(self, hub: object, save_path: list[str]) -> list[object]:
+    def find_neighbor(self, hub: Hub, save_path: list[str]) -> list[Hub]:
 
         neighbor = []
 
@@ -88,7 +100,7 @@ class Algorithm():
 
     def make_algo(self) -> object:
 
-        queue: list[object] = [self.level.hub[self.end]]
+        queue: list[Hub] = [self.level.hub[self.end]]
         save_path: list[str] = []
 
         head: int = 0
