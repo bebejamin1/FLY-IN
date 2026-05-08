@@ -110,7 +110,6 @@ class RoundManager:
         self, hub: Hub, previous_hub_name: str | None
     ) -> Hub | None:
         valid_neighbors: list[Hub] = []
-        all_possible_neighbors: list[Hub] = []
 
         for conn in hub.connection:
             neighbor_name = conn.way_2 if conn.way_1 == hub.name\
@@ -125,7 +124,8 @@ class RoundManager:
                     or getattr(neighbor, 'max_drones', 1) == 0):
                 continue
 
-            all_possible_neighbors.append(neighbor)
+            if (neighbor.value > hub.value):
+                continue
 
             if (neighbor.name != self.end_hub.name):
                 if (neighbor.current >= neighbor.max_drones):
@@ -133,27 +133,54 @@ class RoundManager:
 
             valid_neighbors.append(neighbor)
 
-        if (not all_possible_neighbors):
-            return (None)
-
-        all_possible_neighbors.sort(key=lambda x: x.value)
-        absolute_best = all_possible_neighbors[0]
-
         if (not valid_neighbors):
             return (None)
 
-        valid_neighbors.sort(key=lambda x: x.value)
-        best_available = valid_neighbors[0]
+        valid_neighbors.sort(key=self._neighbor_sort_key)
 
-        weight_diff = 50
+        return (valid_neighbors[0])
 
-        if (absolute_best.name != self.end_hub.name and
-                absolute_best.current >= absolute_best.max_drones):
+    def _neighbor_sort_key(self, neighbor: Hub) -> tuple[int, int, float, str]:
 
-            if (best_available.value - absolute_best.value) >= weight_diff:
-                return None
+        return (neighbor.value, -neighbor.priority_score,
+                self._get_downstream_load(neighbor), neighbor.name)
 
-        return (best_available)
+    def _get_downstream_load(self, hub: Hub) -> float:
+
+        total_load = 0.0
+        queue: list[tuple[Hub, int]] = [(hub, 0)]
+        visited: set[str] = {hub.name}
+        head = 0
+
+        while (head < len(queue)):
+            current_hub, depth = queue[head]
+            head += 1
+
+            max_drones = max(1, current_hub.max_drones)
+            if (current_hub.name == self.end_hub.name):
+                max_drones = self.level.nbr_drones
+            total_load += current_hub.current / max_drones
+
+            if (depth >= 3):
+                continue
+
+            for conn in current_hub.connection:
+                neighbor_name = conn.way_2 if conn.way_1 == current_hub.name\
+                                           else conn.way_1
+
+                if (neighbor_name in visited):
+                    continue
+
+                neighbor = self.level.hub[neighbor_name]
+
+                if (neighbor.zone == "blocked"
+                        or neighbor.value > current_hub.value):
+                    continue
+
+                visited.add(neighbor_name)
+                queue.append((neighbor, depth + 1))
+
+        return (total_load)
 
 # ============================== RESET ========================================
 

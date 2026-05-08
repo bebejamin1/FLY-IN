@@ -21,6 +21,7 @@ from parsing.map_parser import MapParser
 from parsing.parser import Level
 from display.game_view import main as display_main
 from algorithm.dijkstra import Algorithm
+from algorithm.path_checker import PathChecker
 
 
 green = "\033[32m\033[1m\033[1m"
@@ -184,12 +185,18 @@ def main() -> None:
 
         level_load: Level = MapParser(map_level).parse_maps()
 
+        if (not PathChecker(level_load).is_path_possible()):
+            raise ValueError("No possible path between start_hub and end_hub")
+
         level_algo: Level = Algorithm(level_load).make_algo()
 
         display_main(level_algo)
 
     except KeyboardInterrupt:
         print("Program canceled")
+
+    except ValueError as e:
+        print(f"{red}[ERROR]{reset} : {e}")
 
     except Exception as e:
         print("\n" + f"{red}[CRASH]{reset}")

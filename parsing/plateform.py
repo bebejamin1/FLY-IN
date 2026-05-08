@@ -24,6 +24,7 @@ class Hub():
         self.current = 0
         self.connection: list[Connection] = []
         self.value: int = 1
+        self.priority_score: int = 0
 
 
 class Connection():

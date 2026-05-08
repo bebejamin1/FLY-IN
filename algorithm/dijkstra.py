@@ -11,8 +11,13 @@
 #                                                                             #
 # ########################################################################### #
 
+from heapq import heappop, heappush
+
 from parsing.parser import Level
 from parsing.plateform import Hub
+
+
+UNREACHABLE_VALUE = 888888
 
 
 class Algorithm():
@@ -21,10 +26,11 @@ class Algorithm():
         self.level = level
 
         if (self.level.start_hub is None):
-            raise ("start_hub missing")
+            raise ValueError("start_hub missing")
         if (self.level.end_hub is None):
-            raise ("end_hub missing")
+            raise ValueError("end_hub missing")
 
+        self.start: str = level.hub[self.level.start_hub.name].name
         self.end: str = level.hub[self.level.end_hub.name].name
 
 # ============================= DEAD END ======================================
@@ -33,8 +39,7 @@ class Algorithm():
 
         for hub in self.level.hub.values():
 
-            if (hub.name == self.level.start_hub.name
-                    or hub.name == self.level.end_hub.name):
+            if (hub.name == self.start or hub.name == self.end):
                 continue
 
             valid_connections_count = 0
@@ -46,78 +51,97 @@ class Algorithm():
                     valid_connections_count += 1
 
             if (valid_connections_count == 1):
-                hub.value = 888888
+                hub.value = UNREACHABLE_VALUE
+                hub.priority_score = 0
 
 # ============================== VALUE ========================================
 
-    def determine_value(self, hub: Hub, save_path: list[str]) -> int:
+    def determine_value(self, hub: Hub) -> int:
 
-        value = 0
+        if (hub.zone == "restricted"):
+            return (2)
 
-        if (save_path):
-            before = self.level.hub[save_path[-1]].value
-        else:
-            before = 1
+        return (1)
+
+    def determine_priority(self, hub: Hub, next_hub: Hub) -> int:
+
+        priority_score = next_hub.priority_score
 
         if (hub.zone == "priority"):
-            value = 0 + before
+            priority_score += 1
 
-        elif (hub.zone == "normal"):
-            value = 5 + before
-
-        elif (hub.zone == "restricted"):
-            value = 25 + before
-
-        elif (hub.zone == "blocked"):
-            value = 150 + before
-
-        else:
-            value = 1 + before
-
-        return (value)
+        return (priority_score)
 
 # ============================= NEIGHBOR ======================================
 
-    def find_neighbor(self, hub: Hub, save_path: list[str]) -> list[Hub]:
+    def find_neighbor(self, hub: Hub) -> list[Hub]:
 
-        neighbor = []
+        neighbor: list[Hub] = []
 
         for con in hub.connection:
 
             neighbor_name = con.way_2 if con.way_1 == hub.name else con.way_1
             neighbor_hub = self.level.hub[neighbor_name]
 
-            if (neighbor_name not in save_path and
-                neighbor_hub.zone != "blocked" and
-                    con.max_link_capacity != 0 and
-                    neighbor_hub.value <= 2):
+            if (neighbor_hub.zone != "blocked"
+                    and con.max_link_capacity != 0):
 
                 neighbor.append(neighbor_hub)
 
         return (neighbor)
 
+    def is_better_path(
+        self, hub: Hub, value: int, priority_score: int
+    ) -> bool:
+
+        if (value < hub.value):
+            return (True)
+
+        if (value == hub.value and priority_score > hub.priority_score):
+            return (True)
+
+        return (False)
+
 # =============================== ALGO ========================================
 
-    def make_algo(self) -> object:
+    def make_algo(self) -> Level:
 
-        queue: list[Hub] = [self.level.hub[self.end]]
-        save_path: list[str] = []
+        queue: list[tuple[int, int, str]] = []
+        end_hub = self.level.hub[self.end]
 
-        head: int = 0
-        while (head < len(queue)):
+        for hub in self.level.hub.values():
+            hub.value = UNREACHABLE_VALUE
+            hub.priority_score = 0
 
-            curr = queue[head]
-            head += 1
+        end_hub.value = self.determine_value(end_hub)
+        heappush(queue, (end_hub.value, -end_hub.priority_score,
+                         end_hub.name))
 
-            neighbor = self.find_neighbor(curr, save_path)
+        while (queue):
+            value, priority_score, curr_name = heappop(queue)
+            curr = self.level.hub[curr_name]
 
-            if (neighbor):
-                for n in neighbor:
-                    queue.append(n)
+            if (value != curr.value
+                    or -priority_score != curr.priority_score):
+                continue
 
-            curr.value = self.determine_value(curr, save_path)
+            if (curr.name == self.start):
+                continue
 
-            save_path.append(curr.name)
+            neighbor = self.find_neighbor(curr)
+
+            for n in neighbor:
+                new_value = curr.value + self.determine_value(n)
+                new_priority_score = self.determine_priority(n, curr)
+
+                better_path = self.is_better_path(
+                    n, new_value, new_priority_score
+                )
+
+                if (better_path):
+                    n.value = new_value
+                    n.priority_score = new_priority_score
+                    heappush(queue, (n.value, -n.priority_score, n.name))
 
         self.penalize_dead_ends()
 
