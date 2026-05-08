@@ -2,6 +2,9 @@
 
 # FLY-IN
 
+### Preview
+[Screencast from 05-08-2026 11:28:45 AM.webm](https://github.com/user-attachments/assets/a64fa350-4749-4ec6-8d99-640dae39161f)
+
 ## Description
 
 FLY-IN is a Python 3.10 drone routing simulation. The program receives a map
@@ -247,6 +250,11 @@ Current notable result:
 |-- Makefile
 `-- requirement.txt
 ```
+
+## Assets
+
+<img width="900" height="600" alt="1036 8" src="https://github.com/user-attachments/assets/65e0908a-3852-4645-b511-8791f8d8d884" />
+
 
 ## Resources
 
