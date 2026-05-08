@@ -103,7 +103,7 @@ class Level():
 
         except ValueError as e:
             print(f"{red}[ERROR]{reset} : check clean_meta in "
-            "parser" + "\n", e)
+                  "parser" + "\n", e)
             exit()
 
         return (meta_dict)

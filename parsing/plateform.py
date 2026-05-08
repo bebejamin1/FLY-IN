@@ -31,6 +31,7 @@ class Connection():
 
     def __init__(self, way_1: str, way_2: str) -> None:
 
+        self.current: int = 0
         self.max_link_capacity: int = 1
         self.way_1: str = way_1
         self.way_2: str = way_2

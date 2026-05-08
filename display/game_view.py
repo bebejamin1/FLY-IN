@@ -19,7 +19,7 @@ from typing import TypeAlias, cast
 import arcade
 from arcade.types import RGBOrA255
 from parsing.parser import Level
-from parsing.plateform import Hub
+from parsing.plateform import Hub, Connection
 from display.round_manager import RoundManager
 
 WINDOWS_WIDTH = 1920
@@ -34,7 +34,7 @@ MIN_ZOOM = 0.5
 MAX_ZOOM = 7.00
 
 Point: TypeAlias = tuple[int, int]
-ConnectionLine: TypeAlias = tuple[Point, Point, int]
+ConnectionLine: TypeAlias = tuple[Point, Point, Connection]
 
 
 class GameView(arcade.Window):
@@ -142,7 +142,7 @@ class GameView(arcade.Window):
                 x2 = hub2.coord[0] * GRID_SIZE + OFFSET_X
                 y2 = hub2.coord[1] * GRID_SIZE + OFFSET_Y
                 self.connection_lines.append(
-                    ((x1, y1), (x2, y2), conn.max_link_capacity)
+                    ((x1, y1), (x2, y2), conn)
                 )
 
         self.round_manager = RoundManager(self.level)
@@ -210,7 +210,7 @@ class GameView(arcade.Window):
         screen_x = WINDOWS_WIDTH / 2 - self.pan_x * self.zoom
         screen_y = WINDOWS_HEIGHT / 2 - self.pan_y * self.zoom
 
-        for (start, end, capacity) in self.connection_lines:
+        for (start, end, connection) in self.connection_lines:
             x1 = screen_x + start[0] * self.zoom
             y1 = screen_y + start[1] * self.zoom
             x2 = screen_x + end[0] * self.zoom
@@ -220,9 +220,12 @@ class GameView(arcade.Window):
                             )
             mid_x = (x1 + x2) / 2
             mid_y = (y1 + y2) / 2
+            connection_text = (
+                f"{connection.current}/{connection.max_link_capacity}"
+            )
 
             arcade.draw_text(
-                str(capacity), int(mid_x), int(mid_y),
+                connection_text, int(mid_x), int(mid_y),
                 arcade.color.BLACK, max(6, int(10 * self.zoom)),
                 anchor_x="center"
                             )

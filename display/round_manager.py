@@ -14,7 +14,7 @@
 from typing import cast
 
 from parsing.parser import Level
-from parsing.plateform import Hub, Drone
+from parsing.plateform import Hub, Drone, Connection
 
 
 class RoundManager:
@@ -48,6 +48,7 @@ class RoundManager:
     def execute_round(self) -> list[str]:
         self.current_round += 1
         round_logs = []
+        self._reset_connection_currents()
 
         for drone_key, drone in self.drones.items():
             try:
@@ -72,13 +73,15 @@ class RoundManager:
                 continue
 
             current_hub = self.level.hub[drone.hub_current]
-            best_next_hub = self._get_best_available_neighbor(
-                    current_hub, drone.previous_hub
-                                                             )
+            best_move = self._get_best_available_neighbor(
+                current_hub, drone.previous_hub
+            )
 
-            if (best_next_hub):
+            if (best_move):
+                best_next_hub, connection = best_move
 
                 current_hub.current -= 1
+                connection.current += 1
 
                 if (best_next_hub.zone == "restricted"):
                     drone.in_transit = True
@@ -108,14 +111,17 @@ class RoundManager:
 
     def _get_best_available_neighbor(
         self, hub: Hub, previous_hub_name: str | None
-    ) -> Hub | None:
-        valid_neighbors: list[Hub] = []
+    ) -> tuple[Hub, Connection] | None:
+        valid_neighbors: list[tuple[Hub, Connection]] = []
 
         for conn in hub.connection:
             neighbor_name = conn.way_2 if conn.way_1 == hub.name\
                                        else conn.way_1
 
             if (neighbor_name == previous_hub_name):
+                continue
+
+            if (conn.current >= conn.max_link_capacity):
                 continue
 
             neighbor = self.level.hub[neighbor_name]
@@ -131,7 +137,7 @@ class RoundManager:
                 if (neighbor.current >= neighbor.max_drones):
                     continue
 
-            valid_neighbors.append(neighbor)
+            valid_neighbors.append((neighbor, conn))
 
         if (not valid_neighbors):
             return (None)
@@ -140,7 +146,11 @@ class RoundManager:
 
         return (valid_neighbors[0])
 
-    def _neighbor_sort_key(self, neighbor: Hub) -> tuple[int, int, float, str]:
+    def _neighbor_sort_key(
+        self, move: tuple[Hub, Connection]
+    ) -> tuple[int, int, float, str]:
+
+        neighbor = move[0]
 
         return (neighbor.value, -neighbor.priority_score,
                 self._get_downstream_load(neighbor), neighbor.name)
@@ -182,6 +192,18 @@ class RoundManager:
 
         return (total_load)
 
+    def _reset_connection_currents(self) -> None:
+
+        visited: set[int] = set()
+
+        for hub in self.level.hub.values():
+            for conn in hub.connection:
+                conn_id = id(conn)
+                if (conn_id in visited):
+                    continue
+                visited.add(conn_id)
+                conn.current = 0
+
 # ============================== RESET ========================================
 
     def reset(self) -> None:
@@ -191,6 +213,7 @@ class RoundManager:
         for hub in self.level.hub.values():
             hub.current = 0
         self.level.hub[start_name].current = self.level.nbr_drones
+        self._reset_connection_currents()
 
         for drone in self.drones.values():
             drone.hub_current = start_name
