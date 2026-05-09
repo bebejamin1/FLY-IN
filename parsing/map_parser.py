@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/08 12:12:22 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/05/09 11:09:59 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/09 11:26:11 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -46,6 +46,18 @@ class MapParser():
         self.level = f"{level}"
         self.drones = False
 
+    @staticmethod
+    def checker_comment(line: str) -> str:
+        """Remove comments and surrounding spaces from a map line.
+
+        Args:
+            line: Raw line read from the map file.
+
+        Returns:
+            Line content before any comment marker, stripped of whitespace.
+        """
+        return (line.split("#", 1)[0].strip())
+
     def parse_maps(self) -> Level:
         """Read the map file and build a fully validated Level instance.
 
@@ -63,16 +75,13 @@ class MapParser():
 
                 f.seek(0)
                 for line in f:
+                    line = self.checker_comment(line)
 
-                    # ======== NB DRONES ======================================
+                    if (line == ""):
+                        continue
 
                     if (line.startswith("nb_drones:")):
-                        if ("#" in line):
-                            line = line[:line.find("#")]
-                            if (line.endswith(" ")):
-                                line = line[:-1]
-
-                        parse.set_drone(line[11:])
+                        parse.set_drone(line[11:].strip())
                         self.drones = True
 
                     if (line.startswith(("start_hub:", "hub:", "end_hub:",
@@ -81,74 +90,44 @@ class MapParser():
                         raise ValueError(f"{red}[ERROR]{reset} : "
                               "The number of drones is not specified first")
 
-# =============================== START =======================================
-
                     if (line.startswith("start_hub")):
-                        if ("#" in line):
-                            line = line[:line.find("#")]
-                            if (line.endswith(" ")):
-                                line = line[:-1]
-
                         meta = ""
 
                         if ("[" in line):
                             index_crochet = line.find("[")
-                            meta = line[index_crochet:]
+                            meta = line[index_crochet:].strip()
                             line = line[:index_crochet]
 
-                        parse.create_start_hub(line[11:].strip().split(" "),
+                        parse.create_start_hub(line[11:].strip().split(),
                                                meta)
 
-# ================================ HUB ========================================
-
                     if (line.startswith("hub:")):
-                        if ("#" in line):
-                            line = line[:line.find("#")]
-                            if (line.endswith(" ")):
-                                line = line[:-1]
-
                         meta = ""
 
                         if ("[" in line):
                             index_crochet = line.find("[")
-                            meta = line[index_crochet:]
+                            meta = line[index_crochet:].strip()
                             line = line[:index_crochet]
 
-                        parse.create_hub(line[5:].strip().split(" "),
+                        parse.create_hub(line[5:].strip().split(),
                                          meta)
 
-# ================================ END ========================================
-
                     if (line.startswith("end_hub")):
-                        if ("#" in line):
-                            line = line[:line.find("#")]
-                            if (line.endswith(" ")):
-                                line = line[:-1]
-
                         meta = ""
 
                         if ("[" in line):
                             index_crochet = line.find("[")
-                            meta = line[index_crochet:]
+                            meta = line[index_crochet:].strip()
                             line = line[:index_crochet]
 
-                        parse.create_end_hub(line[9:].strip().split(" "),
+                        parse.create_end_hub(line[9:].strip().split(),
                                              meta)
 
-# ============================ CONNECTION =====================================
-
                     if (line.startswith("connection:")):
-                        if ("#" in line):
-                            line = line[:line.find("#")]
-                            if (line.endswith(" ")):
-                                line = line[:-1]
-
-                        parse.make_connection(line[12:].strip().split(" "))
+                        parse.make_connection(line[12:].strip().split())
 
                     else:
                         pass
-
-# ========================== ERRORS CHECKER ===================================
 
                 if (parse.start_hub is None):
                     raise ValueError("There must be an start hub")
