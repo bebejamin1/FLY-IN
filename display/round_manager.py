@@ -11,6 +11,8 @@
 #                                                                             #
 # ########################################################################### #
 
+"""Round-based simulation logic for moving drones between hubs."""
+
 from typing import cast
 
 from parsing.parser import Level
@@ -18,8 +20,25 @@ from parsing.plateform import Hub, Drone, Connection
 
 
 class RoundManager:
+    """Advance drone positions through the scored hub network.
+
+    Attributes:
+        level: Level whose drones and hubs are simulated.
+        current_round: Number of rounds already executed.
+        drones: Drones indexed by their generated names.
+        start_hub: Hub where all drones begin.
+        end_hub: Hub where delivery is completed.
+    """
 
     def __init__(self, level: Level) -> None:
+        """Initialize the round manager and place drones at the start hub.
+
+        Args:
+            level: Parsed and scored level to simulate.
+
+        Returns:
+            None.
+        """
         self.level = level
         self.current_round: int = 0
         self.drones: dict[str, Drone] = self.level.drones
@@ -46,6 +65,11 @@ class RoundManager:
 # ========================== EXECUTE ROUND ====================================
 
     def execute_round(self) -> list[str]:
+        """Move each eligible drone once and record round output logs.
+
+        Returns:
+            Movement logs formatted for terminal output.
+        """
         self.current_round += 1
         round_logs = []
         self._reset_connection_currents()
@@ -112,6 +136,15 @@ class RoundManager:
     def _get_best_available_neighbor(
         self, hub: Hub, previous_hub_name: str | None
     ) -> tuple[Hub, Connection] | None:
+        """Choose the best valid next move from a hub.
+
+        Args:
+            hub: Current hub of the drone being moved.
+            previous_hub_name: Hub visited immediately before the current one.
+
+        Returns:
+            Pair of the chosen neighbor and connection, or None if blocked.
+        """
         valid_neighbors: list[tuple[Hub, Connection]] = []
 
         for conn in hub.connection:
@@ -149,14 +182,28 @@ class RoundManager:
     def _neighbor_sort_key(
         self, move: tuple[Hub, Connection]
     ) -> tuple[int, int, float, str]:
+        """Build a stable ordering key for candidate drone moves.
 
+        Args:
+            move: Candidate neighbor and connection pair.
+
+        Returns:
+            Tuple used to sort by cost, priority, load, and hub name.
+        """
         neighbor = move[0]
 
         return (neighbor.value, -neighbor.priority_score,
                 self._get_downstream_load(neighbor), neighbor.name)
 
     def _get_downstream_load(self, hub: Hub) -> float:
+        """Estimate local congestion downstream from a candidate hub.
 
+        Args:
+            hub: Hub from which downstream load should be sampled.
+
+        Returns:
+            Aggregate load score across nearby reachable hubs.
+        """
         total_load = 0.0
         queue: list[tuple[Hub, int]] = [(hub, 0)]
         visited: set[str] = {hub.name}
@@ -193,7 +240,11 @@ class RoundManager:
         return (total_load)
 
     def _reset_connection_currents(self) -> None:
+        """Clear per-round usage counters on every unique connection.
 
+        Returns:
+            None.
+        """
         visited: set[int] = set()
 
         for hub in self.level.hub.values():
@@ -207,6 +258,11 @@ class RoundManager:
 # ============================== RESET ========================================
 
     def reset(self) -> None:
+        """Restore all drones, hubs, and connections to the initial round state.
+
+        Returns:
+            None.
+        """
         self.current_round = 0
         start_name = self.start_hub.name
 

@@ -11,6 +11,8 @@
 #                                                                             #
 # ########################################################################### #
 
+"""Weighted path scoring algorithm used to guide drone movement."""
+
 from heapq import heappop, heappush
 
 from parsing.parser import Level
@@ -21,8 +23,23 @@ UNREACHABLE_VALUE = 888888
 
 
 class Algorithm():
+    """Compute routing values for each hub in a parsed level.
+
+    Attributes:
+        level: Level whose hubs will receive route values.
+        start: Name of the start hub.
+        end: Name of the end hub.
+    """
 
     def __init__(self, level: Level) -> None:
+        """Initialize the algorithm with a level that has start and end hubs.
+
+        Args:
+            level: Parsed level to score.
+
+        Returns:
+            None.
+        """
         self.level = level
 
         if (self.level.start_hub is None):
@@ -36,7 +53,11 @@ class Algorithm():
 # ============================= DEAD END ======================================
 
     def penalize_dead_ends(self) -> None:
+        """Mark non-terminal dead-end hubs as unreachable.
 
+        Returns:
+            None.
+        """
         for hub in self.level.hub.values():
 
             if (hub.name == self.start or hub.name == self.end):
@@ -57,14 +78,29 @@ class Algorithm():
 # ============================== VALUE ========================================
 
     def determine_value(self, hub: Hub) -> int:
+        """Return the movement cost associated with a hub.
 
+        Args:
+            hub: Hub whose traversal cost should be evaluated.
+
+        Returns:
+            Cost value used by the route-scoring algorithm.
+        """
         if (hub.zone == "restricted"):
             return (2)
 
         return (1)
 
     def determine_priority(self, hub: Hub, next_hub: Hub) -> int:
+        """Calculate priority inherited from the next hub in a route.
 
+        Args:
+            hub: Hub being evaluated.
+            next_hub: Neighbor closer to the destination.
+
+        Returns:
+            Priority score propagated back through the route.
+        """
         priority_score = next_hub.priority_score
 
         if (hub.zone == "priority"):
@@ -75,7 +111,14 @@ class Algorithm():
 # ============================= NEIGHBOR ======================================
 
     def find_neighbor(self, hub: Hub) -> list[Hub]:
+        """Find passable hubs directly connected to a hub.
 
+        Args:
+            hub: Hub whose neighbors should be inspected.
+
+        Returns:
+            List of connected hubs that are not blocked.
+        """
         neighbor: list[Hub] = []
 
         for con in hub.connection:
@@ -93,7 +136,16 @@ class Algorithm():
     def is_better_path(
         self, hub: Hub, value: int, priority_score: int
     ) -> bool:
+        """Check whether a candidate route improves a hub score.
 
+        Args:
+            hub: Hub whose current score should be compared.
+            value: Candidate route cost.
+            priority_score: Candidate priority score.
+
+        Returns:
+            True when the candidate route is preferred, otherwise False.
+        """
         if (value < hub.value):
             return (True)
 
@@ -105,7 +157,11 @@ class Algorithm():
 # =============================== ALGO ========================================
 
     def make_algo(self) -> Level:
+        """Assign route values and priorities to every reachable hub.
 
+        Returns:
+            The same level instance with updated hub values and priorities.
+        """
         queue: list[tuple[int, int, str]] = []
         end_hub = self.level.hub[self.end]
 

@@ -11,6 +11,8 @@
 #                                                                             #
 # ########################################################################### #
 
+"""Command-line entry point for selecting, solving, and displaying a map."""
+
 import os
 import sys
 import random
@@ -33,12 +35,27 @@ reset = "\033[0m"
 
 
 class MapSelector:
+    """Handle interactive selection of map folders and level files.
+
+    Attributes:
+        directory: Root folder where map packs are searched.
+    """
 
     def __init__(self) -> None:
+        """Initialize the selector with the default maps directory.
+
+        Returns:
+            None.
+        """
         self.directory: Path = Path("maps")
         print(self.directory)
 
     def display_file(self) -> None:
+        """Print the ASCII banner used on the map-folder selection screen.
+
+        Returns:
+            None.
+        """
         ran = random.randint(55, 60)
         print(blue)
         print("  _.--._  _.--._".center(ran, " "))
@@ -55,6 +72,11 @@ class MapSelector:
         print(reset)
 
     def display_level(self) -> None:
+        """Print the ASCII banner used on the level selection screen.
+
+        Returns:
+            None.
+        """
         print(blue)
         print("     ----.".center(60, " "))
         print("    \"   _}".center(60, " "))
@@ -73,11 +95,22 @@ class MapSelector:
 # *                                                                           *
 
     def get_available_file(self) -> list[Path]:
+        """List the available map pack folders from the maps directory.
 
+        Returns:
+            Paths found below the configured maps directory.
+        """
         return (list(self.directory.rglob("")))
 
     def get_available_level(self, map_file: str | Path) -> list[Path]:
+        """List playable map files inside a selected map pack folder.
 
+        Args:
+            map_file: Directory path selected by the user.
+
+        Returns:
+            Sorted list of text files found in the selected directory.
+        """
         folder = Path(map_file)
 
         if not folder.exists() or not folder.is_dir():
@@ -86,6 +119,11 @@ class MapSelector:
         return sorted(folder.glob("*.txt"))
 
     def prompt_user(self) -> Path | None:
+        """Prompt the user to choose a map pack and level file.
+
+        Returns:
+            Selected map file path, or None when selection cannot continue.
+        """
         files: list[Path] = self.get_available_file()
 
         if (not files):
@@ -173,7 +211,11 @@ class MapSelector:
 
 
 def main() -> None:
+    """Run the full FLY-IN flow from map selection to graphical display.
 
+    Returns:
+        None.
+    """
     try:
 
         selector = MapSelector()

@@ -11,13 +11,30 @@
 #                                                                             #
 # ########################################################################### #
 
+"""Reachability checks for parsed levels before running the simulation."""
+
 from parsing.parser import Level
 from parsing.plateform import Hub
 
 
 class PathChecker():
+    """Check whether the start hub can reach the end hub.
+
+    Attributes:
+        level: Parsed level to inspect.
+        start: Name of the start hub.
+        end: Name of the end hub.
+    """
 
     def __init__(self, level: Level) -> None:
+        """Initialize the checker with a level containing start and end hubs.
+
+        Args:
+            level: Parsed level to validate for reachability.
+
+        Returns:
+            None.
+        """
         self.level = level
 
         if (self.level.start_hub is None):
@@ -31,7 +48,15 @@ class PathChecker():
 # ============================= NEIGHBOR ======================================
 
     def find_neighbor(self, hub: Hub, visited: set[str]) -> list[Hub]:
+        """Find unvisited passable neighbors for breadth-first search.
 
+        Args:
+            hub: Hub currently being explored.
+            visited: Hub names that have already been queued or visited.
+
+        Returns:
+            List of reachable neighboring hubs.
+        """
         neighbor: list[Hub] = []
 
         for con in hub.connection:
@@ -50,7 +75,11 @@ class PathChecker():
 # =============================== ALGO ========================================
 
     def is_path_possible(self) -> bool:
+        """Determine whether at least one route exists from start to end.
 
+        Returns:
+            True when the destination hub is reachable, otherwise False.
+        """
         queue: list[Hub] = [self.level.hub[self.start]]
         visited: set[str] = {self.start}
         head = 0

@@ -11,6 +11,7 @@
 #                                                                             #
 # ########################################################################### #
 
+"""File-level parser that converts a map text file into a Level object."""
 
 from pathlib import Path
 
@@ -26,13 +27,31 @@ reset = "\033[0m"
 
 
 class MapParser():
+    """Parse a map file path into a validated level.
+
+    Attributes:
+        level: Path to the map file represented as text.
+        drones: Whether the required drone count has already been parsed.
+    """
 
     def __init__(self, level: str | Path) -> None:
+        """Initialize the parser with the map file to load.
+
+        Args:
+            level: Path to the map file.
+
+        Returns:
+            None.
+        """
         self.level = f"{level}"
         self.drones = False
 
     def parse_maps(self) -> Level:
+        """Read the map file and build a fully validated Level instance.
 
+        Returns:
+            Parsed and validated level ready for path checking and display.
+        """
         try:
 
             with open(self.level, "r") as f:

@@ -11,6 +11,8 @@
 #                                                                             #
 # ########################################################################### #
 
+"""Arcade window and rendering callbacks for the FLY-IN simulation."""
+
 # python3 -m venv venv
 # source venv/bin/activate
 
@@ -38,9 +40,27 @@ ConnectionLine: TypeAlias = tuple[Point, Point, Connection]
 
 
 class GameView(arcade.Window):
+    """Display and animate a level simulation in an Arcade window.
+
+    Attributes:
+        level: Parsed and scored level to render.
+        round_manager: Simulation engine used to advance rounds.
+        zoom: Current zoom level applied to the map.
+        pan_x: Horizontal world coordinate centered on the screen.
+        pan_y: Vertical world coordinate centered on the screen.
+        is_paused: Whether automatic round advancement is paused.
+        round_speed_seconds: Delay between automatic rounds.
+    """
 
     def __init__(self, level: Level) -> None:
+        """Create the game window and initialize display state.
 
+        Args:
+            level: Parsed and scored level to display.
+
+        Returns:
+            None.
+        """
         super().__init__(WINDOWS_WIDTH, WINDOWS_HEIGHT, WINDOWS_TITLE,
                          fullscreen=True)
 
@@ -100,6 +120,11 @@ class GameView(arcade.Window):
 # *                                                                           *
 
     def setup(self) -> None:
+        """Load textures and create sprites, lines, and simulation state.
+
+        Returns:
+            None.
+        """
         self.background = arcade.load_texture(
             "display/resources/background.jpg"
                                              )
@@ -170,6 +195,11 @@ class GameView(arcade.Window):
 # *                                                                           *
 
     def _center_map(self) -> None:
+        """Center the camera bounds around all parsed hubs.
+
+        Returns:
+            None.
+        """
         if not self.level.hub:
             return
 
@@ -197,7 +227,11 @@ class GameView(arcade.Window):
 # *                                                                           *
 
     def on_draw(self) -> None:
+        """Render the background, map, drones, status text, and overlays.
 
+        Returns:
+            None.
+        """
         background = self.background
         if background is not None:
             arcade.draw_texture_rect(
@@ -366,6 +400,11 @@ class GameView(arcade.Window):
 # *                                                                           *
 
     def next_round(self) -> None:
+        """Advance the simulation by one round and print movement logs.
+
+        Returns:
+            None.
+        """
         if self.round_manager:
 
             logs = self.round_manager.execute_round()
@@ -378,7 +417,14 @@ class GameView(arcade.Window):
 # *                                                                           *
 
     def on_update(self, delta_time: float) -> None:
+        """Update automatic round timing and animate drone sprites.
 
+        Args:
+            delta_time: Seconds elapsed since the previous frame.
+
+        Returns:
+            None.
+        """
         if not self.round_manager:
             return
 
@@ -427,6 +473,11 @@ class GameView(arcade.Window):
 # *                                                                           *
 
     def _clamp_pan(self) -> None:
+        """Keep the camera center inside the computed map bounds.
+
+        Returns:
+            None.
+        """
         visible_width = WINDOWS_WIDTH / self.zoom
         visible_height = WINDOWS_HEIGHT / self.zoom
 
@@ -446,6 +497,17 @@ class GameView(arcade.Window):
     def on_mouse_press(
         self, x: int, y: int, button: int, modifiers: int
                       ) -> None:
+        """Start panning when the left mouse button is pressed.
+
+        Args:
+            x: Mouse x position in screen coordinates.
+            y: Mouse y position in screen coordinates.
+            button: Mouse button identifier from Arcade.
+            modifiers: Active keyboard modifier bitmask.
+
+        Returns:
+            None.
+        """
         if button == arcade.MOUSE_BUTTON_LEFT:
             self.panning = True
             self.last_mouse_x = x
@@ -454,10 +516,32 @@ class GameView(arcade.Window):
     def on_mouse_release(
         self, x: int, y: int, button: int, modifiers: int
                         ) -> None:
+        """Stop panning when the left mouse button is released.
+
+        Args:
+            x: Mouse x position in screen coordinates.
+            y: Mouse y position in screen coordinates.
+            button: Mouse button identifier from Arcade.
+            modifiers: Active keyboard modifier bitmask.
+
+        Returns:
+            None.
+        """
         if button == arcade.MOUSE_BUTTON_LEFT:
             self.panning = False
 
     def on_mouse_motion(self, x: int, y: int, dx: int, dy: int) -> None:
+        """Pan the camera while dragging the mouse.
+
+        Args:
+            x: Mouse x position in screen coordinates.
+            y: Mouse y position in screen coordinates.
+            dx: Horizontal mouse movement since the previous event.
+            dy: Vertical mouse movement since the previous event.
+
+        Returns:
+            None.
+        """
         if self.panning:
 
             self.pan_x -= dx / self.zoom
@@ -467,7 +551,17 @@ class GameView(arcade.Window):
     def on_mouse_scroll(
         self, x: int, y: int, scroll_x: float, scroll_y: float
     ) -> None:
+        """Zoom the map in response to mouse wheel movement.
 
+        Args:
+            x: Mouse x position in screen coordinates.
+            y: Mouse y position in screen coordinates.
+            scroll_x: Horizontal scroll delta from Arcade.
+            scroll_y: Vertical scroll delta from Arcade.
+
+        Returns:
+            None.
+        """
         zoom_factor = 1.15
         if scroll_y > 0:
             self.zoom *= zoom_factor
@@ -479,7 +573,15 @@ class GameView(arcade.Window):
         self._clamp_pan()
 
     def on_key_press(self, key: int, modifiers: int) -> None:
+        """Handle keyboard shortcuts for playback, speed, reset, and quit.
 
+        Args:
+            key: Arcade key constant for the pressed key.
+            modifiers: Active keyboard modifier bitmask.
+
+        Returns:
+            None.
+        """
         if key == arcade.key.Q:
             self.close()
 
@@ -502,6 +604,14 @@ class GameView(arcade.Window):
 
 
 def main(level: Level) -> None:
+    """Launch the Arcade display for a prepared level.
+
+    Args:
+        level: Parsed and scored level to render.
+
+    Returns:
+        None.
+    """
     windows = GameView(level)
     windows.setup()
     arcade.run()

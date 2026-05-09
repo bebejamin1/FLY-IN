@@ -11,6 +11,8 @@
 #                                                                             #
 # ########################################################################### #
 
+"""Parsing helpers that build an in-memory level from map tokens."""
+
 from typing import Any
 
 from .plateform import Hub, Connection, Drone
@@ -25,8 +27,22 @@ reset = "\033[0m"
 
 
 class Level():
+    """Store every parsed object that defines one playable level.
+
+    Attributes:
+        nbr_drones: Number of drones declared by the map file.
+        start_hub: Starting hub for all drones.
+        end_hub: Delivery destination hub.
+        hub: Hubs indexed by their names.
+        drones: Drones indexed by generated drone identifiers.
+    """
 
     def __init__(self) -> None:
+        """Initialize an empty level container.
+
+        Returns:
+            None.
+        """
         self.nbr_drones: int = 0
         self.start_hub: Hub | None = None
         self.end_hub: Hub | None = None
@@ -36,6 +52,14 @@ class Level():
 # ============================= SET DRONES ====================================
 
     def set_drone(self, line: str) -> None:
+        """Parse and store the number of drones declared in a map file.
+
+        Args:
+            line: Raw text value found after the nb_drones marker.
+
+        Returns:
+            None.
+        """
         try:
 
             nbr = int(line)
@@ -57,6 +81,14 @@ class Level():
 # ============================= CLEAN META ====================================
 
     def clean_meta(self, meta: str) -> dict[str, Any]:
+        """Validate and normalize hub metadata from a raw bracketed string.
+
+        Args:
+            meta: Raw metadata string, such as [color=blue max_drones=2].
+
+        Returns:
+            Dictionary of validated metadata values keyed by metadata name.
+        """
         meta_dict: dict[str, Any] = {}
         valid_meta: list[str] = ["zone", "color", "max_drones"]
         valid_value = [
@@ -111,6 +143,15 @@ class Level():
 # ======================== CREATE START HUB ===================================
 
     def create_start_hub(self, line: list[str], meta: str) -> None:
+        """Create the start hub and spawn the level drones at its coordinates.
+
+        Args:
+            line: Tokenized start hub definition containing name, x, and y.
+            meta: Raw metadata string attached to the start hub.
+
+        Returns:
+            None.
+        """
         if (len(line) != 3):
             raise ValueError(f"create_start_hub {line}")
 
@@ -152,6 +193,15 @@ class Level():
 # ========================= CREATE END HUB ====================================
 
     def create_end_hub(self, line: list[Any], meta: str) -> None:
+        """Create the destination hub from parsed map tokens.
+
+        Args:
+            line: Tokenized end hub definition containing name, x, and y.
+            meta: Raw metadata string attached to the end hub.
+
+        Returns:
+            None.
+        """
         if (len(line) != 3):
             raise ValueError(f"create_end_hub {line}")
 
@@ -188,6 +238,15 @@ class Level():
 # =========================== CREATE HUB ======================================
 
     def create_hub(self, line: list[Any], meta: str) -> None:
+        """Create a regular hub and apply validated metadata to it.
+
+        Args:
+            line: Tokenized hub definition containing name, x, and y.
+            meta: Raw metadata string attached to the hub.
+
+        Returns:
+            None.
+        """
         if (len(line) != 3):
             raise ValueError(f"create_hub {line}")
 
@@ -225,6 +284,14 @@ class Level():
 # ===================== CLEAN META CONNECTION =================================
 
     def clean_meta_connection(self, meta: str) -> int:
+        """Extract a connection capacity from a raw metadata string.
+
+        Args:
+            meta: Raw metadata string attached to a connection.
+
+        Returns:
+            Parsed capacity, or -1 when no valid capacity metadata exists.
+        """
         try:
             if (meta == ""):
                 return (-1)
@@ -241,6 +308,14 @@ class Level():
 # ========================== MAKE CONNECTION ==================================
 
     def make_connection(self, line: list[Any]) -> None:
+        """Create and register a connection between two existing hubs.
+
+        Args:
+            line: Parsed connection tokens, with an optional metadata token.
+
+        Returns:
+            None.
+        """
         if (len(line) > 2 or len(line) < 1):
             raise ValueError(f"create_hub {line}")
 
