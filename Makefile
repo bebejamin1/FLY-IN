@@ -6,7 +6,7 @@
 #    By: bbeaurai <bbeaurai@student.42lehavre.fr    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/01 13:20:39 by bbeaurai          #+#    #+#              #
-#    Updated: 2026/05/01 14:18:11 by bbeaurai         ###   ########.fr        #
+#    Updated: 2026/05/09 12:16:13 by bbeaurai         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -49,9 +49,6 @@ run : install
 	@echo ""
 	@echo "$(GREEN)LAUNCH IN PROGRESS...$(NC)"
 	@$(PYTHON) main.py
-
-debug :
-	$(PYTHON) -m pdb main.py
 
 lint : install
 	clear

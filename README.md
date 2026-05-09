@@ -60,12 +60,6 @@ The program opens an interactive menu:
 5. the pathfinding algorithm computes hub costs;
 6. the Arcade simulation window starts.
 
-### Debug
-
-```bash
-make debug
-```
-
 ### Lint
 
 ```bash
