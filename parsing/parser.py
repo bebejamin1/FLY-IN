@@ -299,6 +299,9 @@ class Level():
             if not (meta.startswith("[") and meta.endswith("]")):
                 return (-1)
 
+            if (int(meta[meta.find("=") + 1: - 1]) < 1):
+                raise ValueError()
+
             return (int(meta[meta.find("=") + 1: - 1]))
 
         except ValueError:
