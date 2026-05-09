@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/08 12:12:22 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/05/01 11:01:55 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/09 11:09:59 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -64,7 +64,14 @@ class MapParser():
                 f.seek(0)
                 for line in f:
 
+                    # ======== NB DRONES ======================================
+
                     if (line.startswith("nb_drones:")):
+                        if ("#" in line):
+                            line = line[:line.find("#")]
+                            if (line.endswith(" ")):
+                                line = line[:-1]
+
                         parse.set_drone(line[11:])
                         self.drones = True
 
@@ -74,7 +81,14 @@ class MapParser():
                         raise ValueError(f"{red}[ERROR]{reset} : "
                               "The number of drones is not specified first")
 
+# =============================== START =======================================
+
                     if (line.startswith("start_hub")):
+                        if ("#" in line):
+                            line = line[:line.find("#")]
+                            if (line.endswith(" ")):
+                                line = line[:-1]
+
                         meta = ""
 
                         if ("[" in line):
@@ -83,9 +97,16 @@ class MapParser():
                             line = line[:index_crochet]
 
                         parse.create_start_hub(line[11:].strip().split(" "),
-                                               meta[:-1])
+                                               meta)
+
+# ================================ HUB ========================================
 
                     if (line.startswith("hub:")):
+                        if ("#" in line):
+                            line = line[:line.find("#")]
+                            if (line.endswith(" ")):
+                                line = line[:-1]
+
                         meta = ""
 
                         if ("[" in line):
@@ -94,9 +115,16 @@ class MapParser():
                             line = line[:index_crochet]
 
                         parse.create_hub(line[5:].strip().split(" "),
-                                         meta[:-1])
+                                         meta)
+
+# ================================ END ========================================
 
                     if (line.startswith("end_hub")):
+                        if ("#" in line):
+                            line = line[:line.find("#")]
+                            if (line.endswith(" ")):
+                                line = line[:-1]
+
                         meta = ""
 
                         if ("[" in line):
@@ -105,13 +133,22 @@ class MapParser():
                             line = line[:index_crochet]
 
                         parse.create_end_hub(line[9:].strip().split(" "),
-                                             meta[:-1])
+                                             meta)
+
+# ============================ CONNECTION =====================================
 
                     if (line.startswith("connection:")):
+                        if ("#" in line):
+                            line = line[:line.find("#")]
+                            if (line.endswith(" ")):
+                                line = line[:-1]
+
                         parse.make_connection(line[12:].strip().split(" "))
 
                     else:
                         pass
+
+# ========================== ERRORS CHECKER ===================================
 
                 if (parse.start_hub is None):
                     raise ValueError("There must be an start hub")
