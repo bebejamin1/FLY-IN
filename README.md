@@ -3,7 +3,8 @@
 # FLY-IN
 
 ### Preview
-<img width="800" height="450" alt="flyin" src="https://github.com/user-attachments/assets/a8f6c6a9-921b-41ec-95b6-2b057c65074a" />
+<img width="800" height="450" alt="flyin2" src="https://github.com/user-attachments/assets/e0e37f1f-265a-4930-aae7-effe2d517eb2" />
+
 
 
 
