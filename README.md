@@ -267,7 +267,5 @@ Current notable result:
 - Dijkstra's algorithm overview: https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
 - Breadth-first search overview: https://en.wikipedia.org/wiki/Breadth-first_search
 
-AI was used as an assistant for code review, algorithm refinement, strict typing
-cleanup, test command design, and README restructuring. The implementation was
-then checked with `make lint-strict` and manual simulation runs, and each AI
-suggestion was reviewed before being kept.
+AI was used to assist with code review,
+ensuring strict typing, and organizing the README file. It also provided a few tutorials to help better understand Arcade, etc. Every suggestion made by the AI was reviewed before being accepted.
