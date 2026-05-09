@@ -87,7 +87,7 @@ class Drone():
         previous_hub: Last hub visited before the current hub.
         in_transit: Whether the drone is crossing a restricted hub edge.
         transit_source: Source hub used for a restricted transit step.
-        transit_destination: Destination hub used for a restricted transit step.
+        transit_destination: Destination hub used for a restricted transit step
     """
 
     def __init__(self, coord: tuple[int, int]) -> None:

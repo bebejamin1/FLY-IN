@@ -258,7 +258,7 @@ class RoundManager:
 # ============================== RESET ========================================
 
     def reset(self) -> None:
-        """Restore all drones, hubs, and connections to the initial round state.
+        """Restore all drones, hubs, and connections to the initial round state
 
         Returns:
             None.
