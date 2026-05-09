@@ -3,7 +3,8 @@
 # FLY-IN
 
 ### Preview
-[Screencast from 05-09-2026 11:43:50 AM.webm](https://github.com/user-attachments/assets/97598953-adcf-4a6c-8633-499ac4f4a84b)
+<img width="800" height="450" alt="flyin" src="https://github.com/user-attachments/assets/a8f6c6a9-921b-41ec-95b6-2b057c65074a" />
+
 
 
 ## Description
