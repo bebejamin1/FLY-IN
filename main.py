@@ -149,12 +149,16 @@ class MapSelector:
                 choice_file: str = input("\nSelect a file "
                                          f"(1-{len(files) + 1}) : ")
 
-                if (choice_file.isdigit()):
+                if (not choice_file.isdigit()):
+                    print(f"{red}[ERROR]{reset} Invalid. Try again.")
+                    continue
 
-                    if (int(choice_file) == len(files) + 1):
-                        sys.exit()
+                choice_file_index: int = int(choice_file)
 
-                index_file: int = int(choice_file) - 1
+                if (choice_file_index == len(files) + 1):
+                    sys.exit()
+
+                index_file: int = choice_file_index - 1
 
                 if (0 <= index_file < len(files)):
                     map_files: Path = files[index_file]
@@ -184,11 +188,16 @@ class MapSelector:
                 choise_level: str = input("\nChoose a level "
                                           f"(1-{len(levels) + 1}) : ")
 
-                if choise_level.isdigit():
-                    if (int(choise_level) == (len(levels) + 1)):
-                        self.prompt_user()
+                if (not choise_level.isdigit()):
+                    print(f"{red}[ERROR]{reset} Invalid. Try again.")
+                    continue
 
-                    index_level: int = int(choise_level) - 1
+                choise_level_index: int = int(choise_level)
+
+                if (choise_level_index == (len(levels) + 1)):
+                    return (self.prompt_user())
+
+                index_level: int = choise_level_index - 1
 
                 if 0 <= index_level < len(levels):
                     level: Path = levels[index_level]
@@ -201,7 +210,7 @@ class MapSelector:
             exit()
 
         except ValueError:
-            self.prompt_user()
+            return (self.prompt_user())
 
         return (None)
 
@@ -243,7 +252,6 @@ def main() -> None:
     except Exception as e:
         print("\n" + f"{red}[CRASH]{reset}")
         print(e)
-        raise
 
 
 if __name__ == "__main__":
