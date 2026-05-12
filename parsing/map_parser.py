@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/08 12:12:22 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/05/12 14:33:47 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/12 15:55:31 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -50,14 +50,23 @@ class MapParser():
 
     @staticmethod
     def checker_format(line: str) -> None:
+        check = ""
+
+        if (line.startswith("nb_drones:")):
+            check = line.split(" ")
+            if (len(check[0]) != len("nb_drones:") or len(check) != 2):
+                raise ValueError(f"Error in writing the line ({line})")
+
         zones = ["start_hub:", "end_hub:", "hub:"]
         for z in zones:
-            if (line in zones):
+            if (line.startswith(z)):
                 lenght = len(z)
-            check = line[lenght:]
-            print(check)
-            
-        # a voir comment check le bon format avoir une liste etla len
+                cro = line.find("[")
+                check = line[lenght:]
+                check = line[:cro - 1]
+                check = check.split(" ")
+                if (len(check[0]) != lenght or len(check) != 4):
+                    raise ValueError(f"Error in writing the line ({line})")
 
 # =============================== COMMENT =====================================
 
@@ -93,17 +102,12 @@ class MapParser():
                 f.seek(0)
                 for line in f:
                     line = self.checker_comment(line)
-
-                    if (line.count(":") > 1):
-                        raise ValueError("The fields must be entered as "
-                                         "follows double \":\" locate" + "\n"
-                                         "zone: <name> <x> <y> [metadata]")
+                    self.checker_format(line)
 
                     if (line == ""):
                         continue
 
                     if (line.startswith("nb_drones:")):
-                        self.checker_format(line)
                         parse.set_drone(line[11:].strip())
                         self.drones = True
 
