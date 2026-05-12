@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/20 10:45:00 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/05/05 10:22:18 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/12 14:25:03 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -604,7 +604,7 @@ class GameView(arcade.Window):
             self.round_speed_seconds = min(5.0, self.round_speed_seconds + 0.2)
 
 
-def main(level: Level, info) -> None:
+def main(level: Level, info: bool) -> None:
     """Launch the Arcade display for a prepared level.
 
     Args:
@@ -616,18 +616,3 @@ def main(level: Level, info) -> None:
     windows = GameView(level, info)
     windows.setup()
     arcade.run()
-
-
-if __name__ == "__main__":
-    level = Level()
-    level.nbr_drones = 2
-
-    hub1 = Hub("start", (0, 0))
-    hub1.zone = "start"
-    level.start_hub = hub1
-    level.hub["start"] = hub1
-    hub2 = Hub("end", (5, 5))
-    hub2.zone = "end"
-    level.end_hub = hub2
-    level.hub["end"] = hub2
-    main(level)

@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/07 11:00:13 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/05/01 13:21:36 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/12 14:27:41 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -219,7 +219,7 @@ class MapSelector:
 # *                                                                           *
 
 
-def main(argv) -> None:
+def main() -> None:
     """Run the full FLY-IN flow from map selection to graphical display.
 
     Returns:
@@ -259,4 +259,4 @@ def main(argv) -> None:
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()

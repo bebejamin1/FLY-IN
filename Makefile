@@ -6,7 +6,7 @@
 #    By: bbeaurai <bbeaurai@student.42lehavre.fr    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/01 13:20:39 by bbeaurai          #+#    #+#              #
-#    Updated: 2026/05/09 12:16:13 by bbeaurai         ###   ########.fr        #
+#    Updated: 2026/05/12 14:23:26 by bbeaurai         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,6 +46,7 @@ install : venv/bin/activate requirement.txt $(FLAKE8) $(MYPY) $(ARCADE)
 
 
 run : install
+	clear
 	@echo ""
 	@echo "$(GREEN)LAUNCH IN PROGRESS...$(NC)"
 	@$(PYTHON) main.py
@@ -68,7 +69,8 @@ lint-strict : install
 	mypy . --strict --exclude venv
 	@echo ""
 
-clean : 
+clean :
+	clear
 	@echo ""
 	@echo "$(RED)CLEANING...$(NC)"
 	@find . -name "__pycache__" -exec rm -rf {} \+
@@ -77,9 +79,11 @@ clean :
 	@echo "$(GREEN)DELETE [OK]...$(NC)"
 
 uninstall : requirement.txt
+	clear
 	$(PIP) uninstall -r requirement.txt
 
 uninstall_venv :
+	clear
 	rm -rf venv
 
 .PHONY: clean lint run install uninstall
