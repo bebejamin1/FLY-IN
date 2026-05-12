@@ -1,1 +1,16 @@
-"""Algorithm package for path scoring and reachability checks."""
+#!/usr/bin/env python3
+# ########################################################################### #
+#   shebang: 1                                                                #
+#                                                          :::      ::::::::  #
+#   __init__.py                                          :+:      :+:    :+:  #
+#                                                      +:+ +:+         +:+    #
+#   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
+#                                                  +#+#+#+#+#+   +#+          #
+#   Created: 2026/05/12 14:21:57 by bbeaurai            #+#    #+#            #
+#   Updated: 2026/05/12 14:22:00 by bbeaurai           ###   ########.fr      #
+#                                                                             #
+# ########################################################################### #
+
+__version__ = "1.2.3"
+
+__author__ = "BEAURAIN Benjamin"

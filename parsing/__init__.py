@@ -1,1 +1,16 @@
-"""Parsing package for map files and level model construction."""
+#!/usr/bin/env python3
+# ########################################################################### #
+#   shebang: 1                                                                #
+#                                                          :::      ::::::::  #
+#   __init__.py                                          :+:      :+:    :+:  #
+#                                                      +:+ +:+         +:+    #
+#   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
+#                                                  +#+#+#+#+#+   +#+          #
+#   Created: 2026/05/12 14:20:13 by bbeaurai            #+#    #+#            #
+#   Updated: 2026/05/12 14:21:35 by bbeaurai           ###   ########.fr      #
+#                                                                             #
+# ########################################################################### #
+
+__version__ = "1.2.3"
+
+__author__ = "BEAURAIN Benjamin"
