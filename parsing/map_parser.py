@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/08 12:12:22 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/05/09 11:26:11 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/12 13:41:34 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -46,6 +46,14 @@ class MapParser():
         self.level = f"{level}"
         self.drones = False
 
+# =============================== FORMAT ======================================
+
+    @staticmethod
+    def checker_format(line: str) -> None:
+        pass  # a voir comment check le bon format avoir une liste etla len
+
+# =============================== COMMENT =====================================
+
     @staticmethod
     def checker_comment(line: str) -> str:
         """Remove comments and surrounding spaces from a map line.
@@ -58,6 +66,8 @@ class MapParser():
         """
         return (line.split("#", 1)[0].strip())
 
+# ============================= PARSE MAPS ====================================
+
     def parse_maps(self) -> Level:
         """Read the map file and build a fully validated Level instance.
 
@@ -69,7 +79,7 @@ class MapParser():
             with open(self.level, "r") as f:
 
                 if (len(f.read()) <= 10):
-                    raise ValueError("The file is empty, you idiot")
+                    raise ValueError("Die Datei ist leer, du Trottel.")
 
                 parse = Level()
 
@@ -77,10 +87,16 @@ class MapParser():
                 for line in f:
                     line = self.checker_comment(line)
 
+                    if (line.count(":") > 1):
+                        raise ValueError("The fields must be entered as "
+                                         "follows double \":\" locate" + "\n"
+                                         "zone: <name> <x> <y> [metadata]")
+
                     if (line == ""):
                         continue
 
                     if (line.startswith("nb_drones:")):
+                        self.checker_format(line)
                         parse.set_drone(line[11:].strip())
                         self.drones = True
 
@@ -129,6 +145,8 @@ class MapParser():
                     else:
                         pass
 
+# ================================ TESTS ======================================
+
                 if (parse.start_hub is None):
                     raise ValueError("There must be an start hub")
 
@@ -148,8 +166,8 @@ class MapParser():
                     raise ValueError("The end_hub has no connections")
 
                 if (parse.start_hub.coord == parse.end_hub.coord):
-                    raise ValueError("The start_hub and end_hub cannot be part"
-                                     " of the same problem")
+                    raise ValueError("The start_hub and end_hub nodes cannot "
+                                     "be at the same coordinates")
 
                 if (parse.start_hub.max_drones < parse.nbr_drones
                         or parse.end_hub.max_drones < parse.nbr_drones):

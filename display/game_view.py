@@ -52,7 +52,7 @@ class GameView(arcade.Window):
         round_speed_seconds: Delay between automatic rounds.
     """
 
-    def __init__(self, level: Level) -> None:
+    def __init__(self, level: Level, info: bool) -> None:
         """Create the game window and initialize display state.
 
         Args:
@@ -65,6 +65,7 @@ class GameView(arcade.Window):
                          fullscreen=True)
 
         self.level = level
+        self.info = info
         self.background: arcade.Texture | None = None
         self.hub_textures: dict[str, arcade.Texture] = {}
         self.hub_sprites: arcade.SpriteList[arcade.Sprite] = (
@@ -603,7 +604,7 @@ class GameView(arcade.Window):
             self.round_speed_seconds = min(5.0, self.round_speed_seconds + 0.2)
 
 
-def main(level: Level) -> None:
+def main(level: Level, info) -> None:
     """Launch the Arcade display for a prepared level.
 
     Args:
@@ -612,7 +613,7 @@ def main(level: Level) -> None:
     Returns:
         None.
     """
-    windows = GameView(level)
+    windows = GameView(level, info)
     windows.setup()
     arcade.run()
 

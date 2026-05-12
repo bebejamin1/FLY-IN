@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/13 13:30:59 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/05/08 13:00:36 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/12 14:16:20 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -70,12 +70,13 @@ class Level():
 
             if (nbr > 500):
                 raise ValueError("The number of drones should "
-                                 f"not be too high ({nbr})")
+                                 f"not be too high max 500 : ({nbr})")
 
             self.nbr_drones = nbr
 
         except (TypeError, ValueError, IndexError, AttributeError) as e:
             print(f"{red}[ERROR]{reset} : set_drone {e}")
+            print(line)
             exit()
 
 # ============================= CLEAN META ====================================
@@ -123,6 +124,10 @@ class Level():
                     if (int(m[m.find("=") + 1:]) < 1):
                         raise ValueError("The maximum number of drones "
                                          f"must be greater than 1 ({m})")
+                    if (int(m[m.find("=") + 1:]) > self.nbr_drones):
+                        raise ValueError("max_link_capacity must be less "
+                                         "than or equal to the number "
+                                         "of drones")
                     meta_dict[m[:m.find("=")]] = int(m[m.find("=") + 1:])
 
                 elif not (m[m.find("=") + 1:]
@@ -136,6 +141,7 @@ class Level():
         except ValueError as e:
             print(f"{red}[ERROR]{reset} : check clean_meta in "
                   "parser" + "\n", e)
+            print(meta)
             exit()
 
         return (meta_dict)
@@ -153,12 +159,16 @@ class Level():
             None.
         """
         if (len(line) != 3):
-            raise ValueError(f"create_start_hub {line}")
+            raise ValueError(f"incorrect format {line} {meta}")
 
         try:
 
             name: str = str(line[0])
             coord: tuple[int, int] = (int(line[1]), int(line[2]))
+
+            if (coord[0] > 100 or coord[1] > 100):
+                raise ValueError("It is not possible to enter coordinates "
+                                 f"greater than 100. \n{name}: {coord}")
 
             if not (self.hub.get(name) is None and self.start_hub is None):
                 raise ValueError("start_hub duplicate")
@@ -169,10 +179,18 @@ class Level():
 
             if (meta_dict):
                 for k, v in meta_dict.items():
+                    if (v == "blocked"):
+                        raise ValueError("start_hub cannot be blocked")
                     if (k == "zone"):
-                        raise ValueError("The start_hub cannot have a meta "
-                                         "tag for the zone")
+                        print(f"{redp}start_hub will not take the zone change "
+                              f"into account{reset}")
                     setattr(huber, k, v)
+
+            for h in self.hub.values():
+                if (huber.coord == h.coord):
+                    raise ValueError("Hub is already at the same coordinates "
+                                     "\n"
+                                     f"{name}: {coord} == {h.name}: {h.coord}")
 
             huber.zone = "start"
             self.start_hub = huber
@@ -188,6 +206,7 @@ class Level():
 
         except (ValueError, TypeError) as e:
             print(f"{red}[ERROR]{reset} : ", e)
+            print(*line, meta)
             exit()
 
 # ========================= CREATE END HUB ====================================
@@ -203,15 +222,19 @@ class Level():
             None.
         """
         if (len(line) != 3):
-            raise ValueError(f"create_end_hub {line}")
+            raise ValueError(f"incorrect format {line} {meta}")
 
         try:
 
             name: str = str(line[0])
             coord: tuple[int, int] = (int(line[1]), int(line[2]))
 
+            if (coord[0] > 100 or coord[1] > 100):
+                raise ValueError("It is not possible to enter coordinates "
+                                 f"greater than 100. \n{name}: {coord}")
+
             if not (self.hub.get(name) is None and self.end_hub is None):
-                raise ValueError("start_hub duplicate")
+                raise ValueError("end_hub duplicate")
 
             huber: Hub = Hub(name, coord)
 
@@ -219,10 +242,18 @@ class Level():
 
             if (meta_dict):
                 for k, v in meta_dict.items():
+                    if (v == "blocked"):
+                        raise ValueError("end_hub cannot be blocked")
                     if (k == "zone"):
-                        raise ValueError("The end_hub cannot have a meta tag "
-                                         "for the zone")
+                        print(f"{redp}end_hub will not take the zone change "
+                              f"into account{reset}")
                     setattr(huber, k, v)
+
+            for h in self.hub.values():
+                if (huber.coord == h.coord):
+                    raise ValueError("Hub is already at the same coordinates "
+                                     "\n"
+                                     f"{name}: {coord} == {h.name}: {h.coord}")
 
             huber.zone = "end"
             self.end_hub = huber
@@ -233,6 +264,7 @@ class Level():
 
         except (ValueError, TypeError) as e:
             print(f"{red}[ERROR]{reset} : ", e)
+            print(*line, meta)
             exit()
 
 # =========================== CREATE HUB ======================================
@@ -248,12 +280,16 @@ class Level():
             None.
         """
         if (len(line) != 3):
-            raise ValueError(f"create_hub {line}")
+            raise ValueError(f"incorrect format {line} {meta}")
 
         try:
 
             name: str = str(line[0])
             coord: tuple[int, int] = (int(line[1]), int(line[2]))
+
+            if (coord[0] > 100 or coord[1] > 100):
+                raise ValueError("It is not possible to enter coordinates "
+                                 f"greater than 100. \n{name}: {coord}")
 
             if not (self.hub.get(name) is None):
                 raise ValueError("Hub duplicate")
@@ -265,20 +301,18 @@ class Level():
             if (meta_dict):
                 for k, v in meta_dict.items():
                     setattr(huber, k, v)
-                    if (v == "blocked"):
-                        huber.max_drones = 0
-                    if (v == "restricted"):
-                        huber.value = 2
 
             for h in self.hub.values():
                 if (huber.coord == h.coord):
-                    raise ValueError("There cannot be two hubs at "
-                                     "the same coordinates.")
+                    raise ValueError("Hub is already at the same coordinates "
+                                     "\n"
+                                     f"{name}: {coord} == {h.name}: {h.coord}")
 
             self.hub[huber.name] = huber
 
         except (ValueError, TypeError) as e:
             print(f"{red}[ERROR]{reset} : ", e)
+            print(*line, meta)
             exit()
 
 # ===================== CLEAN META CONNECTION =================================
@@ -299,14 +333,25 @@ class Level():
             if not (meta.startswith("[") and meta.endswith("]")):
                 return (-1)
 
-            if (int(meta[meta.find("=") + 1: - 1]) < 1):
-                raise ValueError()
+            if (meta[:meta.find("=")] != "[max_link_capacity"):
+                raise ValueError("The connection metadata must not differ from"
+                                 " `max_link_capacity`")
+
+            nbr = int(meta[meta.find("=") + 1: - 1])
+
+            if (nbr < 1):
+                raise ValueError("max_link_capacity must be "
+                                 "a positive integer")
+
+            if (nbr > self.nbr_drones):
+                raise ValueError("max_link_capacity must be less than or "
+                                 "equal to the number of drones")
 
             return (int(meta[meta.find("=") + 1: - 1]))
 
-        except ValueError:
-            print(f"{red}[ERROR]{reset} : max_link_capacity must be "
-                  "a positive integer")
+        except ValueError as e:
+            print(f"{red}[ERROR]{reset} : {e}")
+            print(meta)
             exit()
 # ========================== MAKE CONNECTION ==================================
 
@@ -319,20 +364,30 @@ class Level():
         Returns:
             None.
         """
-        if (len(line) > 2 or len(line) < 1):
-            raise ValueError(f"create_hub {line}")
 
         try:
+
+            if (len(line) > 2 or len(line) < 1):
+                raise ValueError("data entry error ")
+
             meta = -1
             meta_link: int = -1
             link = line[0].split("-")
 
+            if (len(link) != 2):
+                raise ValueError("The connection is not configured correctly"
+                                 "\n" + f" {line[0]} must be -> "
+                                 "connection1-connection2")
             if (len(line) == 2):
                 meta = line[1]
                 meta_link = self.clean_meta_connection(meta)
 
             way_1: str = link[0]
             way_2: str = link[1]
+
+            if (way_1 == way_2):
+                raise ValueError("The connections must be different "
+                                 f"({way_1}-{way_2})")
 
             if not (self.hub[way_1] or self.hub[way_2]):
                 raise ValueError("The connection cannot be established; "
@@ -348,11 +403,12 @@ class Level():
 
         except ValueError as e:
             print(f"{red}[ERROR]{reset} : ", e)
+            print(*line)
             exit()
         except TypeError:
             print(f"{red}[ERROR]{reset} : Invalid connection;"
                   f" hub not recognized {line}")
             exit()
         except (NameError, KeyError) as e:
-            print(f"{red}[ERROR]{reset} : {line}, {e}")
+            print(f"{red}[ERROR]{reset} : Unknown connection {line[0]} -> {e}")
             exit()

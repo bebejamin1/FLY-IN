@@ -74,7 +74,6 @@ clean :
 	@find . -name "__pycache__" -exec rm -rf {} \+
 	@find . -name ".mypy_cache" -exec rm -rf {} \+
 	@find . -name ".vscode" -exec rm -rf {} \+
-	@find . -name "venv" -exec rm -rf {} \+
 	@echo "$(GREEN)DELETE [OK]...$(NC)"
 
 uninstall : requirement.txt

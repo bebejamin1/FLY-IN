@@ -219,13 +219,17 @@ class MapSelector:
 # *                                                                           *
 
 
-def main() -> None:
+def main(argv) -> None:
     """Run the full FLY-IN flow from map selection to graphical display.
 
     Returns:
         None.
     """
+    info = False
     try:
+        if (len(sys.argv) == 2):
+            if (sys.argv[1] == "--capacity-info"):
+                info = True
 
         selector = MapSelector()
 
@@ -241,7 +245,7 @@ def main() -> None:
 
         level_algo: Level = Algorithm(level_load).make_algo()
 
-        display_main(level_algo)
+        display_main(level_algo, info)
 
     except KeyboardInterrupt:
         print("Program canceled")
@@ -255,4 +259,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv)
