@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/13 13:30:59 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/05/12 16:05:31 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/12 16:28:30 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -331,7 +331,8 @@ class Level():
                 return (-1)
 
             if not (meta.startswith("[") and meta.endswith("]")):
-                return (-1)
+                raise ValueError("The metadata is incorrect; it should be "
+                                 "[max_link_capacity=positive_int]")
 
             if (meta[:meta.find("=")] != "[max_link_capacity"):
                 raise ValueError("The connection metadata must not differ from"
@@ -398,6 +399,10 @@ class Level():
             if (meta_link > 1):
                 connect.max_link_capacity = meta_link
 
+            for c in self.hub[way_1].connection:
+                if (c.way_1 == way_1 and c.way_2 == way_2
+                        or c.way_2 == way_1 and c.way_2 == way_1):
+                    raise ValueError("Duplicate connection")
             self.hub[way_1].connection.append(connect)
             self.hub[way_2].connection.append(connect)
 

@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/08 12:12:22 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/05/12 15:55:31 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/12 16:30:02 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -50,7 +50,7 @@ class MapParser():
 
     @staticmethod
     def checker_format(line: str) -> None:
-        check = ""
+        check: list[str] = []
 
         if (line.startswith("nb_drones:")):
             check = line.split(" ")
@@ -62,9 +62,9 @@ class MapParser():
             if (line.startswith(z)):
                 lenght = len(z)
                 cro = line.find("[")
-                check = line[lenght:]
-                check = line[:cro - 1]
-                check = check.split(" ")
+                string = line[lenght:]
+                string = line[:cro - 1]
+                check = string.split(" ")
                 if (len(check[0]) != lenght or len(check) != 4):
                     raise ValueError(f"Error in writing the line ({line})")
 
