@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/08 12:12:22 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/05/12 13:41:34 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/12 14:33:47 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -50,7 +50,14 @@ class MapParser():
 
     @staticmethod
     def checker_format(line: str) -> None:
-        pass  # a voir comment check le bon format avoir une liste etla len
+        zones = ["start_hub:", "end_hub:", "hub:"]
+        for z in zones:
+            if (line in zones):
+                lenght = len(z)
+            check = line[lenght:]
+            print(check)
+            
+        # a voir comment check le bon format avoir une liste etla len
 
 # =============================== COMMENT =====================================
 
