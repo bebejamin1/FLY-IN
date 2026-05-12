@@ -6,7 +6,7 @@
 #    By: bbeaurai <bbeaurai@student.42lehavre.fr    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/01 13:20:39 by bbeaurai          #+#    #+#              #
-#    Updated: 2026/05/12 14:23:26 by bbeaurai         ###   ########.fr        #
+#    Updated: 2026/05/12 15:56:41 by bbeaurai         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,15 +34,15 @@ venv/bin/activate :
 $(FLAKE8) : 
 	@echo ""
 	@echo "$(PINK)DEPENDENCY INSTALL"
-	@$(PIP) install -q -r requirement.txt
+	@$(PIP) install -q -r requirements.txt
 
 $(MYPY) : 
-	@$(PIP) install -q -r requirement.txt
+	@$(PIP) install -q -r requirements.txt
 	
 $(ARCADE) :
-	@$(PIP) install -q -r requirement.txt
+	@$(PIP) install -q -r requirements.txt
 
-install : venv/bin/activate requirement.txt $(FLAKE8) $(MYPY) $(ARCADE)
+install : venv/bin/activate requirements.txt $(FLAKE8) $(MYPY) $(ARCADE)
 
 
 run : install
@@ -78,9 +78,9 @@ clean :
 	@find . -name ".vscode" -exec rm -rf {} \+
 	@echo "$(GREEN)DELETE [OK]...$(NC)"
 
-uninstall : requirement.txt
+uninstall : requirements.txt
 	clear
-	$(PIP) uninstall -r requirement.txt
+	$(PIP) uninstall -r requirements.txt
 
 uninstall_venv :
 	clear
