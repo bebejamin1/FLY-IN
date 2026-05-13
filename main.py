@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/07 11:00:13 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/05/12 14:27:41 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/13 10:07:40 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -227,9 +227,6 @@ def main() -> None:
     """
     info = False
     try:
-        if (len(sys.argv) == 2):
-            if (sys.argv[1] == "--capacity-info"):
-                info = True
 
         selector = MapSelector()
 
