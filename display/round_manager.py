@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/23 13:30:00 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/05/12 14:29:38 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/13 10:42:33 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -64,7 +64,7 @@ class RoundManager:
 
 # ========================== EXECUTE ROUND ====================================
 
-    def execute_round(self) -> list[str]:
+    def execute_round(self, info: bool) -> list[str]:
         """Move each eligible drone once and record round output logs.
 
         Returns:

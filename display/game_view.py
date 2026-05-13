@@ -7,7 +7,7 @@
 #   By: bbeaurai <bbeaurai@student.42lehavre.fr>     +#+  +:+       +#+       #
 #                                                  +#+#+#+#+#+   +#+          #
 #   Created: 2026/04/20 10:45:00 by bbeaurai            #+#    #+#            #
-#   Updated: 2026/05/12 14:25:03 by bbeaurai           ###   ########.fr      #
+#   Updated: 2026/05/13 10:42:22 by bbeaurai           ###   ########.fr      #
 #                                                                             #
 # ########################################################################### #
 
@@ -408,7 +408,7 @@ class GameView(arcade.Window):
         """
         if self.round_manager:
 
-            logs = self.round_manager.execute_round()
+            logs = self.round_manager.execute_round(self.info)
 
             if logs:
                 print(" ".join(logs))
